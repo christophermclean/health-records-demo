@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthSync - Your Complete Health History</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        nav {
+            padding: 20px 0;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2563eb;
+        }
+        
+        .hero {
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+        
+        .subtitle {
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 60px;
+        }
+        
+        .btn {
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #2563eb;
+            border: 2px solid #2563eb;
+        }
+        
+        .btn-secondary:hover {
+            background: #eff6ff;
+        }
+        
+        .view-section {
+            display: none;
+            padding: 40px 0;
+        }
+        
+        .view-section.active {
+            display: block;
+        }
+        
+        .back-btn {
+            margin-bottom: 30px;
+            color: #2563eb;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .back-btn:hover {
+            text-decoration: underline;
+        }
+        
+        .interface-mock {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .upload-zone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 60px 40px;
+            text-align: center;
+            background: #f8fafc;
+            margin: 20px 0;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+            margin: 30px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e5e7eb;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -48px;
+            top: 24px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #2563eb;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #2563eb;
+        }
+        
+        .timeline-date {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .timeline-source {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        
+        .summary-card {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .summary-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1e40af;
+        }
+        
+        .health-checks {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .check-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .check-card.overdue {
+            border-left: 4px solid #dc2626;
+        }
+        
+        .check-card.upcoming {
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .check-card.current {
+            border-left: 4px solid #10b981;
+        }
+        
+        .check-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+        
+        .status-overdue {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-upcoming {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-current {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .patient-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        
+        .info-value {
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="logo">HealthSync</div>
+        </div>
+    </nav>
+
+    <!-- Landing Page -->
+    <div id="landing" class="container">
+        <div class="hero">
+            <h1>Your Complete Health History,<br>Finally in One Place</h1>
+            <p class="subtitle">Aggregate all your medical records — from every doctor, hospital, and lab — into a unified timeline. Help your doctors see the full picture.</p>
+            
+            <div class="cta-buttons">
+                <button class="btn btn-primary" onclick="showView('patient')">For Patients</button>
+                <button class="btn btn-secondary" onclick="showView('doctor')">For Doctors</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patient View -->
+    <div id="patient-view" class="view-section container">
+        <span class="back-btn" onclick="showView('landing')">← Back</span>
+        
+        <h2>Patient Dashboard</h2>
+        <p style="color: #666; margin-bottom: 30px;">Upload and organize all your health records in one place</p>
+        
+        <div class="interface-mock">
+            <h3>Add Your Records</h3>
+            <div class="upload-zone">
+                <div class="upload-icon">📄</div>
+                <h4>Upload Your Health Records</h4>
+                <p style="color: #666; margin-top: 8px;">Drag and drop files, or click to browse</p>
+                <p style="color: #94a3b8; font-size: 14px; margin-top: 12px;">PDF, DOCX, JPG, PNG • Photos of paper records welcome</p>
+            </div>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <p style="color: #666;">Or connect directly:</p>
+                <div style="display: flex; gap: 12px; justify-content: center; margin-top: 12px;">
+                    <button class="btn btn-secondary" style="padding: 10px 20px;">Import from MyChart</button>
+                    <button class="btn btn-secondary" style="padding: 10px 20px;">Import from HealthKit</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="interface-mock">
+            <h3>Your Health Timeline</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">December 10, 2024</div>
+                    <div class="timeline-title">Annual Physical Exam</div>
+                    <div class="timeline-source">Dr. Sarah Johnson, Primary Care • Mass General</div>
+                    <p style="margin-top: 8px; font-size: 14px;">Blood pressure: 118/76, Weight: 175 lbs, All vitals normal</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">September 15, 2024</div>
+                    <div class="timeline-title">Lab Results - Lipid Panel</div>
+                    <div class="timeline-source">Quest Diagnostics</div>
+                    <p style="margin-top: 8px; font-size: 14px;">Total cholesterol: 185 mg/dL, LDL: 110 mg/dL, HDL: 55 mg/dL</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">June 3, 2024</div>
+                    <div class="timeline-title">Specialist Visit - Cardiology</div>
+                    <div class="timeline-source">Dr. Michael Chen, Cardiologist • Boston Medical Center</div>
+                    <p style="margin-top: 8px; font-size: 14px;">EKG normal, Echocardiogram shows normal function</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">March 20, 2024</div>
+                    <div class="timeline-title">Prescription - Lisinopril 10mg</div>
+                    <div class="timeline-source">Dr. Sarah Johnson, Primary Care</div>
+                    <p style="margin-top: 8px; font-size: 14px;">Take once daily for blood pressure management</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctor View -->
+    <div id="doctor-view" class="view-section container">
+        <span class="back-btn" onclick="showView('landing')">← Back</span>
+        
+        <h2>Doctor Dashboard</h2>
+        <p style="color: #666; margin-bottom: 30px;">Complete patient history and recommended care gaps</p>
+        
+        <div class="interface-mock">
+            <h3>Patient: John Smith</h3>
+            <div class="patient-info">
+                <div class="info-item">
+                    <span class="info-label">Date of Birth</span>
+                    <span class="info-value">March 15, 1978 (46 years)</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Last Visit</span>
+                    <span class="info-value">December 10, 2024</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Active Conditions</span>
+                    <span class="info-value">Hypertension, Hyperlipidemia</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Current Medications</span>
+                    <span class="info-value">Lisinopril 10mg daily</span>
+                </div>
+            </div>
+            
+            <div class="summary-card">
+                <div class="summary-title">Clinical Summary</div>
+                <p>46-year-old male with well-controlled hypertension on Lisinopril. Lipid panel from September showed borderline high LDL (110 mg/dL). Patient has maintained healthy weight and blood pressure. Last cardiology consult in June showed normal cardiac function. No concerning trends in vital signs over past year.</p>
+            </div>
+        </div>
+        
+        <div class="interface-mock">
+            <h3>Recommended Health Checks & Care Gaps</h3>
+            
+            <div class="health-checks">
+                <div class="check-card overdue">
+                    <span class="check-status status-overdue">OVERDUE</span>
+                    <h4>Colonoscopy Screening</h4>
+                    <p style="color: #666; font-size: 14px; margin: 8px 0;">Last: Never</p>
+                    <p style="font-size: 14px;">Recommended for age 45+. Patient is now 46 and due for initial screening.</p>
+                </div>
+                
+                <div class="check-card upcoming">
+                    <span class="check-status status-upcoming">DUE SOON</span>
+                    <h4>Lipid Panel Follow-up</h4>
+                    <p style="color: #666; font-size: 14px; margin: 8px 0;">Last: September 15, 2024</p>
+                    <p style="font-size: 14px;">Due in 3 months (March 2025) to reassess LDL levels and determine if statin therapy needed.</p>
+                </div>
+                
+                <div class="check-card upcoming">
+                    <span class="check-status status-upcoming">DUE SOON</span>
+                    <h4>Flu Vaccination</h4>
+                    <p style="color: #666; font-size: 14px; margin: 8px 0;">Last: October 2023</p>
+                    <p style="font-size: 14px;">Annual flu shot recommended, especially given cardiovascular history.</p>
+                </div>
+                
+                <div class="check-card current">
+                    <span class="check-status status-current">UP TO DATE</span>
+                    <h4>Annual Physical</h4>
+                    <p style="color: #666; font-size: 14px; margin: 8px 0;">Last: December 10, 2024</p>
+                    <p style="font-size: 14px;">Next due: December 2025</p>
+                </div>
+                
+                <div class="check-card current">
+                    <span class="check-status status-current">UP TO DATE</span>
+                    <h4>Blood Pressure Monitoring</h4>
+                    <p style="color: #666; font-size: 14px; margin: 8px 0;">Last: December 10, 2024</p>
+                    <p style="font-size: 14px;">Well-controlled on current medication. Continue monitoring every 3-6 months.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showView(view) {
+            // Hide all sections
+            document.getElementById('landing').style.display = 'none';
+            document.getElementById('patient-view').classList.remove('active');
+            document.getElementById('doctor-view').classList.remove('active');
+            
+            // Show selected section
+            if (view === 'landing') {
+                document.getElementById('landing').style.display = 'block';
+            } else if (view === 'patient') {
+                document.getElementById('patient-view').classList.add('active');
+            } else if (view === 'doctor') {
+                document.getElementById('doctor-view').classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
