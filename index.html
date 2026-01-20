@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HealthSync - Your Complete Health History</title>
+    <title>HealthSync Patient Portal</title>
     <style>
         * {
             margin: 0;
@@ -19,7 +19,7 @@
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
@@ -28,9 +28,6 @@
             padding: 20px 0;
             background: white;
             border-bottom: 1px solid #e5e5e5;
-            position: sticky;
-            top: 0;
-            z-index: 100;
         }
         
         .nav-content {
@@ -45,52 +42,89 @@
             color: #2563eb;
         }
         
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-        
-        .nav-link {
+        .doctor-link {
             color: #64748b;
             text-decoration: none;
-            font-weight: 500;
-            cursor: pointer;
+            font-size: 14px;
         }
         
-        .nav-link:hover {
+        .doctor-link:hover {
             color: #2563eb;
         }
         
-        .hero {
-            padding: 80px 0;
-            text-align: center;
-            background: white;
+        .page {
+            display: none;
+            padding: 40px 0;
+            min-height: calc(100vh - 200px);
         }
         
-        h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-            color: #1a1a1a;
+        .page.active {
+            display: block;
         }
         
-        h2 {
+        .patient-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+        
+        .patient-name {
             font-size: 32px;
-            margin-bottom: 16px;
-            color: #1a1a1a;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
         
-        .subtitle {
-            font-size: 20px;
-            color: #666;
-            margin-bottom: 40px;
+        .patient-meta {
+            font-size: 16px;
+            opacity: 0.9;
         }
         
-        .cta-buttons {
-            display: flex;
+        .status-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
-            justify-content: center;
-            margin-bottom: 60px;
+            margin: 20px 0;
+        }
+        
+        .status-item {
+            padding: 24px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border-left: 4px solid #2563eb;
+        }
+        
+        .status-item.pending {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+        }
+        
+        .status-item.complete {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+        
+        .status-label {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
         }
         
         .btn {
@@ -100,14 +134,8 @@
             border-radius: 8px;
             cursor: pointer;
             border: none;
-            text-decoration: none;
-            display: inline-block;
             transition: all 0.2s;
-        }
-        
-        .btn-sm {
-            padding: 8px 16px;
-            font-size: 14px;
+            display: inline-block;
         }
         
         .btn-primary {
@@ -117,6 +145,7 @@
         
         .btn-primary:hover {
             background: #1d4ed8;
+            transform: translateY(-1px);
         }
         
         .btn-secondary {
@@ -129,1297 +158,321 @@
             background: #eff6ff;
         }
         
-        .view-section {
-            display: none;
-            padding: 40px 0;
-        }
-        
-        .view-section.active {
-            display: block;
-        }
-        
-        .back-btn {
-            margin-bottom: 30px;
-            color: #2563eb;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
-        }
-        
-        .back-btn:hover {
-            text-decoration: underline;
-        }
-        
-        .interface-mock {
+        .upload-section {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
-            padding: 30px;
+            padding: 40px;
             margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
         }
         
-        .tabs {
-            display: flex;
-            gap: 8px;
-            border-bottom: 2px solid #e5e7eb;
-            margin-bottom: 24px;
-        }
-        
-        .tab {
-            padding: 12px 24px;
-            cursor: pointer;
-            border: none;
-            background: none;
-            color: #64748b;
-            font-weight: 500;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px;
-            transition: all 0.2s;
-        }
-        
-        .tab:hover {
-            color: #2563eb;
-        }
-        
-        .tab.active {
-            color: #2563eb;
-            border-bottom-color: #2563eb;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .patient-selector {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-        }
-        
-        .patient-card {
-            flex: 1;
-            min-width: 250px;
-            padding: 20px;
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
+        .upload-zone {
+            border: 3px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 60px 40px;
+            text-align: center;
+            background: #f8fafc;
             cursor: pointer;
             transition: all 0.2s;
         }
         
-        .patient-card:hover {
-            border-color: #2563eb;
-            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
-        }
-        
-        .patient-card.selected {
+        .upload-zone:hover {
             border-color: #2563eb;
             background: #eff6ff;
         }
         
-        .patient-name {
-            font-weight: 600;
-            font-size: 18px;
-            margin-bottom: 8px;
+        .upload-zone.dragging {
+            border-color: #2563eb;
+            background: #dbeafe;
         }
         
-        .patient-meta {
-            font-size: 14px;
-            color: #64748b;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
+        .upload-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
         }
         
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
+        .epic-sync {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 2px solid #bae6fd;
             border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .status-synced {
-            background: #d1fae5;
-            color: #065f46;
-        }
-        
-        .status-pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-        
-        .status-action-required {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-        
-        .data-source-card {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 16px 0;
-        }
-        
-        .source-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        
-        .source-title {
-            font-weight: 600;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .source-icon {
-            font-size: 24px;
-        }
-        
-        .sync-info {
-            font-size: 14px;
-            color: #64748b;
-        }
-        
-        .record-item {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 16px;
-            margin: 12px 0;
-        }
-        
-        .record-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 12px;
-        }
-        
-        .record-title {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .record-date {
-            font-size: 14px;
-            color: #64748b;
-        }
-        
-        .record-provider {
-            font-size: 14px;
-            color: #64748b;
-            margin-bottom: 8px;
-        }
-        
-        .record-content {
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        
-        .medication-list {
-            list-style: none;
-            margin: 8px 0;
-        }
-        
-        .medication-list li {
-            padding: 6px 0;
-            padding-left: 20px;
-            position: relative;
-        }
-        
-        .medication-list li:before {
-            content: '•';
-            position: absolute;
-            left: 0;
-            color: #2563eb;
-            font-weight: bold;
-        }
-        
-        .lab-results {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-            margin: 12px 0;
-        }
-        
-        .lab-result {
-            padding: 12px;
-            background: #f9fafb;
-            border-radius: 6px;
-        }
-        
-        .lab-name {
-            font-size: 13px;
-            color: #64748b;
-            margin-bottom: 4px;
-        }
-        
-        .lab-value {
-            font-weight: 600;
-            font-size: 16px;
-        }
-        
-        .fax-document {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-left: 4px solid #64748b;
-            border-radius: 6px;
-            padding: 16px;
-            margin: 12px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-        }
-        
-        .fax-document.urgent {
-            border-left-color: #dc2626;
-            background: #fef2f2;
-        }
-        
-        .fax-info {
-            flex: 1;
-        }
-        
-        .fax-header {
-            display: flex;
-            gap: 12px;
-            align-items: start;
-            margin-bottom: 8px;
-        }
-        
-        .fax-icon {
-            font-size: 32px;
-        }
-        
-        .fax-meta {
-            font-size: 13px;
-            color: #64748b;
-            margin-bottom: 8px;
-        }
-        
-        .fax-preview {
-            font-size: 14px;
-            background: #f9fafb;
-            padding: 12px;
-            border-radius: 4px;
-            font-style: italic;
-            color: #475569;
-        }
-        
-        .fax-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 24px 0;
-        }
-        
-        .stat-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 20px;
+            padding: 30px;
+            margin: 20px 0;
             text-align: center;
         }
         
-        .stat-number {
-            font-size: 36px;
-            font-weight: 700;
-            color: #2563eb;
-            margin-bottom: 8px;
+        .epic-sync.syncing {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-color: #fcd34d;
         }
         
-        .stat-label {
-            font-size: 14px;
-            color: #64748b;
-            font-weight: 500;
+        .epic-sync.synced {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-color: #6ee7b7;
         }
         
-        .category-breakdown {
+        .sync-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .sync-icon.spinning {
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .fax-info {
+            background: #f0f9ff;
+            border: 2px solid #bae6fd;
+            border-radius: 12px;
+            padding: 24px;
             margin: 20px 0;
         }
         
-        .category-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid #e5e7eb;
+        .fax-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #0c4a6e;
+            margin: 12px 0;
+            font-family: monospace;
         }
         
-        .category-item:last-child {
-            border-bottom: none;
-        }
-        
-        .category-name {
-            font-weight: 500;
-        }
-        
-        .category-count {
-            color: #2563eb;
-            font-weight: 600;
-        }
-        
-        .timeline {
-            position: relative;
-            padding-left: 40px;
-            margin: 30px 0;
-        }
-        
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: #e5e7eb;
-        }
-        
-        .timeline-item {
-            position: relative;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #f9fafb;
-            border-radius: 8px;
-        }
-        
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -48px;
-            top: 24px;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #2563eb;
-            border: 3px solid white;
-            box-shadow: 0 0 0 2px #2563eb;
-        }
-        
-        .alert-banner {
+        .reminder-card {
             background: #fef3c7;
             border-left: 4px solid #f59e0b;
-            padding: 16px;
-            border-radius: 6px;
-            margin: 20px 0;
-            display: flex;
-            gap: 12px;
-            align-items: start;
-        }
-        
-        .alert-icon {
-            font-size: 24px;
-        }
-        
-        .alert-content {
-            flex: 1;
-        }
-        
-        .alert-title {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .patient-info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-            padding: 20px;
-            background: #f9fafb;
             border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
         }
         
-        .info-item {
-            display: flex;
-            flex-direction: column;
+        h2 {
+            font-size: 28px;
+            margin-bottom: 12px;
         }
         
-        .info-label {
-            font-size: 12px;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-        
-        .info-value {
-            font-weight: 500;
+        h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
     <nav>
         <div class="container">
             <div class="nav-content">
-                <div class="logo">HealthSync</div>
-                <div class="nav-links">
-                    <span class="nav-link" onclick="showView('landing')">Home</span>
-                </div>
+                <div class="logo">HealthSync Patient Portal</div>
+                <a href="doctor.html" class="doctor-link">Doctor Portal →</a>
             </div>
         </div>
     </nav>
 
-    <!-- Landing Page -->
-    <div id="landing" class="view-section active">
-        <div class="hero">
-            <div class="container">
-                <h1>Your Complete Health History,<br>Finally in One Place</h1>
-                <p class="subtitle">Aggregate all your medical records — from Epic, eFax, and every provider — into a unified timeline. Help your doctors see the full picture.</p>
+    <!-- Status Overview Page -->
+    <div id="status-page" class="page active">
+        <div class="container">
+            <div class="patient-header">
+                <div class="patient-name">Maya Chen</div>
+                <div class="patient-meta">MRN: MRN-CF2847 • DOB: 08/14/2002 (Age 22) • Cystic Fibrosis</div>
+            </div>
+
+            <div class="status-card">
+                <h2>Your Record Status</h2>
+                <p style="color: #64748b; margin-bottom: 20px;">Keep your medical records up to date so your care team has complete information</p>
                 
-                <div class="cta-buttons">
-                    <button class="btn btn-primary" onclick="showView('patient')">Patient Dashboard Demo</button>
-                    <button class="btn btn-secondary" onclick="showView('doctor-list')">Doctor Dashboard Demo</button>
+                <div class="status-grid">
+                    <div class="status-item complete">
+                        <div class="status-label">Epic Records</div>
+                        <div class="status-value">✓ Synced</div>
+                        <p style="font-size: 14px; color: #64748b; margin-top: 8px;">Last sync: Today 9:23 AM</p>
+                    </div>
+                    
+                    <div class="status-item pending">
+                        <div class="status-label">Uploaded Documents</div>
+                        <div class="status-value">3 Pending</div>
+                        <p style="font-size: 14px; color: #64748b; margin-top: 8px;">Awaiting review</p>
+                    </div>
+                    
+                    <div class="status-item">
+                        <div class="status-label">Total Records</div>
+                        <div class="status-value">347</div>
+                        <p style="font-size: 14px; color: #64748b; margin-top: 8px;">Across 15 providers</p>
+                    </div>
                 </div>
+            </div>
+
+            <div class="reminder-card">
+                <h3>⏰ Pending Action Required</h3>
+                <p style="margin: 12px 0;">You have 2 specialists who need your updated records:</p>
+                <ul style="margin: 12px 0 12px 20px;">
+                    <li>Dr. Sarah Martinez (Pulmonology) - CF Clinic</li>
+                    <li>Dr. Robert Kim (Endocrinology) - CFRD Management</li>
+                </ul>
+                <button class="btn btn-primary" style="margin-top: 12px;" onclick="sendReminders()">Send Records to Doctors</button>
+            </div>
+
+            <div style="display: flex; gap: 20px; margin-top: 30px; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="showPage('upload')">Upload New Records</button>
+                <button class="btn btn-secondary" onclick="showPage('view-records')">View All My Records</button>
             </div>
         </div>
     </div>
 
-    <!-- Patient View -->
-    <div id="patient-view" class="view-section container">
-        <span class="back-btn" onclick="showView('landing')">← Back to Home</span>
-        
-        <h2>Patient Dashboard</h2>
-        <p style="color: #666; margin-bottom: 30px;">View your complete health history from all sources</p>
-        
-        <!-- Patient Selector -->
-        <div class="patient-selector">
-            <div class="patient-card selected" onclick="selectPatient(0)">
-                <div class="patient-name">Sarah Chen</div>
-                <div class="patient-meta">
-                    <span>MRN: MRN-894521</span>
-                    <span>DOB: 03/15/1978</span>
-                    <span class="status-badge status-synced" style="margin-top: 8px;">All Synced</span>
-                </div>
-            </div>
-            <div class="patient-card" onclick="selectPatient(1)">
-                <div class="patient-name">James Martinez</div>
-                <div class="patient-meta">
-                    <span>MRN: MRN-672849</span>
-                    <span>DOB: 11/22/1965</span>
-                    <span class="status-badge status-action-required" style="margin-top: 8px;">Action Needed</span>
-                </div>
-            </div>
-            <div class="patient-card" onclick="selectPatient(2)">
-                <div class="patient-name">Emily Rodriguez</div>
-                <div class="patient-meta">
-                    <span>MRN: MRN-328457</span>
-                    <span>DOB: 06/08/1992</span>
-                    <span class="status-badge status-pending" style="margin-top: 8px;">Pending Sync</span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Patient Data Tabs -->
-        <div class="interface-mock">
-            <div class="tabs">
-                <button class="tab active" onclick="switchTab(0)">Epic Records</button>
-                <button class="tab" onclick="switchTab(1)">eFax Documents</button>
-                <button class="tab" onclick="switchTab(2)">Complete History</button>
-            </div>
+    <!-- Upload Records Page -->
+    <div id="upload-page" class="page">
+        <div class="container">
+            <button class="btn btn-secondary" onclick="showPage('status')" style="margin-bottom: 20px;">← Back to Status</button>
             
-            <!-- Tab 0: Epic Records -->
-            <div class="tab-content active" id="patient-tab-0">
-                <div class="data-source-card">
-                    <div class="source-header">
-                        <div class="source-title">
-                            <span class="source-icon">🏥</span>
-                            Epic MyChart Integration
-                        </div>
-                        <span class="status-badge status-synced">Synced</span>
-                    </div>
-                    <div class="sync-info">Last synced: January 18, 2025 at 9:23 AM</div>
-                    
-                    <div id="epic-records">
-                        <!-- Epic records will be populated by JavaScript -->
-                    </div>
-                </div>
+            <h2>Add Medical Records</h2>
+            <p style="color: #64748b; margin-bottom: 30px;">Upload documents or sync from Epic MyChart</p>
+
+            <!-- Epic Sync -->
+            <div id="epic-sync-section" class="epic-sync">
+                <div class="sync-icon">🏥</div>
+                <h3>Sync from Epic MyChart</h3>
+                <p style="margin: 12px 0 20px 0; color: #64748b;">Automatically pull all your records from Epic</p>
+                <button class="btn btn-primary" onclick="syncEpic()">Connect Epic MyChart</button>
             </div>
-            
-            <!-- Tab 1: eFax Documents -->
-            <div class="tab-content" id="patient-tab-1">
-                <div class="data-source-card">
-                    <div class="source-header">
-                        <div class="source-title">
-                            <span class="source-icon">📠</span>
-                            eFax Incoming Documents
-                        </div>
-                        <span class="status-badge status-pending">2 Pending Review</span>
-                    </div>
-                    <div class="sync-info">Last received: January 17, 2025 at 2:34 PM</div>
-                    
-                    <div id="efax-documents">
-                        <!-- eFax documents will be populated by JavaScript -->
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Tab 2: Complete History -->
-            <div class="tab-content" id="patient-tab-2">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number" id="total-records">0</div>
-                        <div class="stat-label">Total Records</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="providers-count">0</div>
-                        <div class="stat-label">Healthcare Providers</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="years-span">0</div>
-                        <div class="stat-label">Years of History</div>
-                    </div>
-                </div>
+
+            <!-- File Upload -->
+            <div class="upload-section">
+                <h3>Upload Documents</h3>
+                <p style="color: #64748b; margin-bottom: 20px;">Drag and drop files or click to browse</p>
                 
-                <h3 style="margin-top: 30px; margin-bottom: 16px;">Records by Category</h3>
-                <div class="category-breakdown" id="category-breakdown">
-                    <!-- Categories will be populated by JavaScript -->
+                <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+                    <div class="upload-icon">📄</div>
+                    <h3>Drop files here or click to upload</h3>
+                    <p style="color: #64748b; margin-top: 12px;">PDF, DOCX, JPG, PNG • Photos of paper records are welcome</p>
                 </div>
+                <input type="file" id="file-input" multiple style="display: none;" onchange="handleFiles(this.files)">
                 
-                <h3 style="margin-top: 30px; margin-bottom: 16px;">Complete Timeline</h3>
-                <div class="timeline" id="complete-timeline">
-                    <!-- Timeline will be populated by JavaScript -->
-                </div>
+                <div id="uploaded-files"></div>
+            </div>
+
+            <!-- Fax Instructions -->
+            <div class="fax-info">
+                <h3>📠 Have your doctor fax records directly</h3>
+                <p style="margin: 12px 0;">Give this number to any provider who needs to send records:</p>
+                <div class="fax-number">(617) 555-HLTH</div>
+                <p style="font-size: 14px; color: #64748b;">Include your name and MRN: MRN-CF2847</p>
             </div>
         </div>
     </div>
 
-    <!-- Doctor View -->
-    <div id="doctor-view" class="view-section container">
-        <span class="back-btn" onclick="showView('landing')">← Back to Home</span>
-        
-        <h2>Doctor Dashboard</h2>
-        <p style="color: #666; margin-bottom: 30px;">Complete patient history with integrated Epic and eFax data</p>
-        
-        <!-- Doctor Patient Selector -->
-        <div class="patient-selector">
-            <div class="patient-card selected" onclick="selectDoctorPatient(0)">
-                <div class="patient-name">Sarah Chen</div>
-                <div class="patient-meta">
-                    <span>MRN: MRN-894521 • Age: 46</span>
-                    <span>Last Visit: Jan 10, 2025</span>
-                    <span class="status-badge status-synced" style="margin-top: 8px;">All Data Current</span>
-                </div>
-            </div>
-            <div class="patient-card" onclick="selectDoctorPatient(1)">
-                <div class="patient-name">James Martinez</div>
-                <div class="patient-meta">
-                    <span>MRN: MRN-672849 • Age: 59</span>
-                    <span>Last Visit: Jan 8, 2025</span>
-                    <span class="status-badge status-action-required" style="margin-top: 8px;">New Fax Received</span>
-                </div>
-            </div>
-            <div class="patient-card" onclick="selectDoctorPatient(2)">
-                <div class="patient-name">Emily Rodriguez</div>
-                <div class="patient-meta">
-                    <span>MRN: MRN-328457 • Age: 32</span>
-                    <span>Last Visit: Jan 12, 2025</span>
-                    <span class="status-badge status-pending" style="margin-top: 8px;">Pending Records</span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Doctor View Tabs -->
-        <div class="interface-mock">
-            <div id="doctor-patient-info">
-                <!-- Patient info will be populated by JavaScript -->
-            </div>
+    <!-- View Records Page -->
+    <div id="view-records-page" class="page">
+        <div class="container">
+            <button class="btn btn-secondary" onclick="showPage('status')" style="margin-bottom: 20px;">← Back to Status</button>
             
-            <div class="tabs">
-                <button class="tab active" onclick="switchDoctorTab(0)">Clinical Summary</button>
-                <button class="tab" onclick="switchDoctorTab(1)">Epic Data</button>
-                <button class="tab" onclick="switchDoctorTab(2)">Incoming eFax</button>
-                <button class="tab" onclick="switchDoctorTab(3)">Complete Records</button>
-            </div>
-            
-            <!-- Doctor Tab Content -->
-            <div class="tab-content active" id="doctor-tab-0">
-                <div id="clinical-summary">
-                    <!-- Clinical summary will be populated by JavaScript -->
-                </div>
-            </div>
-            
-            <div class="tab-content" id="doctor-tab-1">
-                <div id="doctor-epic-data">
-                    <!-- Epic data will be populated by JavaScript -->
-                </div>
-            </div>
-            
-            <div class="tab-content" id="doctor-tab-2">
-                <div id="doctor-efax-data">
-                    <!-- eFax data will be populated by JavaScript -->
-                </div>
-            </div>
-            
-            <div class="tab-content" id="doctor-tab-3">
-                <div id="doctor-complete-records">
-                    <!-- Complete records will be populated by JavaScript -->
-                </div>
+            <h2>My Complete Medical Records</h2>
+            <p style="color: #64748b; margin-bottom: 30px;">All your records from Epic, uploads, and faxed documents</p>
+
+            <div class="status-card">
+                <div id="records-timeline"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Patient Data
-        const patients = [
-            {
-                id: 'P001',
-                name: 'Sarah Chen',
-                dob: '1978-03-15',
-                age: 46,
-                mrn: 'MRN-894521',
-                insurance: 'Blue Cross Blue Shield - PPO',
-                primaryPhysician: 'Dr. Michael Roberts',
-                lastVisit: '2025-01-10',
-                conditions: ['Hypertension'],
-                medications: ['Lisinopril 10mg daily', 'Atorvastatin 20mg nightly'],
-                epic: {
-                    status: 'synced',
-                    lastSync: '2025-01-18 09:23 AM',
-                    records: [
-                        {
-                            date: '2025-01-10',
-                            type: 'Office Visit',
-                            provider: 'Dr. Michael Roberts - Primary Care',
-                            diagnosis: 'Hypertension, well-controlled',
-                            notes: 'Patient reports good compliance with medication. BP 128/82. Continue current medications. Discussed importance of regular exercise and low-sodium diet.',
-                            vitals: { bp: '128/82', weight: '165 lbs', hr: '72 bpm' }
-                        },
-                        {
-                            date: '2024-12-05',
-                            type: 'Lab Results',
-                            provider: 'Quest Diagnostics',
-                            diagnosis: 'Annual wellness labs',
-                            results: {
-                                'Hemoglobin A1C': '5.4%',
-                                'LDL Cholesterol': '98 mg/dL',
-                                'HDL Cholesterol': '62 mg/dL',
-                                'TSH': '2.1 mIU/L',
-                                'Creatinine': '0.9 mg/dL'
-                            }
-                        },
-                        {
-                            date: '2024-11-20',
-                            type: 'Specialist Consultation',
-                            provider: 'Dr. Lisa Wong - Cardiology',
-                            diagnosis: 'Routine cardiology follow-up',
-                            notes: 'EKG shows normal sinus rhythm. Echocardiogram demonstrates normal LV function, EF 60%. No significant valvular disease. Continue current medical management.',
-                        }
-                    ]
-                },
-                eFax: {
-                    status: 'pending',
-                    lastReceived: '2025-01-15 02:34 PM',
-                    documents: [
-                        {
-                            date: '2025-01-15',
-                            from: 'Boston Cardiology Associates',
-                            type: 'Consultation Report',
-                            pages: 4,
-                            preview: 'CARDIOLOGY CONSULTATION - Patient referred for evaluation of occasional palpitations. Holter monitor shows rare PVCs, benign in nature. No concerning arrhythmias detected. Recommend continued monitoring and lifestyle modifications.',
-                            urgent: false
-                        },
-                        {
-                            date: '2024-12-20',
-                            from: 'Mass General Radiology',
-                            type: 'Imaging Report - Chest X-Ray',
-                            pages: 2,
-                            preview: 'IMPRESSION: Normal cardiac silhouette. No acute pulmonary findings. No pleural effusion. Lung fields are clear.',
-                            urgent: false
-                        }
-                    ]
-                },
-                completedRecords: {
-                    totalRecords: 47,
-                    providers: 8,
-                    yearsSpan: 12,
-                    categories: {
-                        'Office Visits': 23,
-                        'Lab Results': 12,
-                        'Imaging': 6,
-                        'Specialist Consultations': 4,
-                        'Prescriptions': 2
-                    }
-                },
-                clinicalSummary: '46-year-old female with well-controlled hypertension on Lisinopril and statin therapy. Recent labs show excellent lipid control and normal renal function. Cardiology evaluation demonstrates normal cardiac function with EF 60%. Patient is compliant with medications and follows recommended lifestyle modifications. No acute concerns at this time.'
-            },
-            {
-                id: 'P002',
-                name: 'James Martinez',
-                dob: '1965-11-22',
-                age: 59,
-                mrn: 'MRN-672849',
-                insurance: 'Medicare + UnitedHealthcare Supplement',
-                primaryPhysician: 'Dr. Emily Thompson',
-                lastVisit: '2025-01-08',
-                conditions: ['Type 2 Diabetes Mellitus', 'COPD', 'Hypertension'],
-                medications: ['Metformin 1000mg BID', 'Advair 250/50 BID', 'Aspirin 81mg daily', 'Lisinopril 20mg daily'],
-                epic: {
-                    status: 'synced',
-                    lastSync: '2025-01-17 11:45 AM',
-                    records: [
-                        {
-                            date: '2025-01-08',
-                            type: 'Follow-up Visit',
-                            provider: 'Dr. Emily Thompson - Primary Care',
-                            diagnosis: 'Type 2 Diabetes Mellitus, COPD stable',
-                            notes: 'A1C improved to 7.2% from 7.8% three months ago. Lung sounds clear bilaterally. Continue current regimen. Strongly encouraged smoking cessation - provided resources and discussed nicotine replacement options.',
-                            vitals: { bp: '138/84', weight: '192 lbs', o2sat: '95%' }
-                        },
-                        {
-                            date: '2024-12-28',
-                            type: 'Emergency Visit',
-                            provider: 'Brigham & Women\'s Emergency Department',
-                            diagnosis: 'Acute Bronchitis',
-                            notes: 'Patient presented with productive cough x 5 days, fever to 101°F. CXR negative for pneumonia. Lungs with scattered rhonchi, no wheezing. Prescribed azithromycin 5-day course. Advised to follow up with PCP if symptoms worsen.',
-                        },
-                        {
-                            date: '2024-11-15',
-                            type: 'Lab Results',
-                            provider: 'LabCorp',
-                            diagnosis: 'Diabetic monitoring labs',
-                            results: {
-                                'Hemoglobin A1C': '7.2%',
-                                'Fasting Glucose': '142 mg/dL',
-                                'eGFR': '68 mL/min',
-                                'Microalbumin': '45 mg/g'
-                            }
-                        }
-                    ]
-                },
-                eFax: {
-                    status: 'action-required',
-                    lastReceived: '2025-01-17 10:22 AM',
-                    documents: [
-                        {
-                            date: '2025-01-17',
-                            from: 'South Shore Pulmonology',
-                            type: 'Pulmonary Function Test Results',
-                            pages: 6,
-                            preview: 'SPIROMETRY RESULTS - FEV1: 62% predicted (1.85L), FVC: 78% predicted (3.12L), FEV1/FVC ratio: 59%. Moderate obstructive pattern consistent with COPD. Post-bronchodilator improvement of 8%. Recommend continuation of current inhaler therapy.',
-                            urgent: true
-                        },
-                        {
-                            date: '2025-01-12',
-                            from: 'CVS Pharmacy',
-                            type: 'Prescription Refill Authorization Request',
-                            pages: 1,
-                            preview: 'REQUEST FOR PRIOR AUTHORIZATION: Advair Diskus 250/50 - 90 day supply. Insurance requires PA for brand name. Generic Fluticasone/Salmeterol available as alternative.',
-                            urgent: false
-                        },
-                        {
-                            date: '2024-12-30',
-                            from: 'Brigham & Women\'s Hospital',
-                            type: 'ED Visit Summary',
-                            pages: 3,
-                            preview: 'EMERGENCY DEPARTMENT VISIT SUMMARY - Chief Complaint: Cough and fever. Diagnosis: Acute Bronchitis. Treatment: Azithromycin 250mg prescribed. Patient stable at discharge.',
-                            urgent: false
-                        }
-                    ]
-                },
-                completedRecords: {
-                    totalRecords: 89,
-                    providers: 12,
-                    yearsSpan: 15,
-                    categories: {
-                        'Office Visits': 34,
-                        'Lab Results': 28,
-                        'Imaging': 11,
-                        'Specialist Consultations': 9,
-                        'Emergency Visits': 5,
-                        'Prescriptions': 2
-                    }
-                },
-                clinicalSummary: '59-year-old male with Type 2 Diabetes Mellitus showing improvement (A1C 7.2%), COPD with moderate obstruction on PFTs, and hypertension. Recent PFT shows FEV1 62% predicted. Active smoker despite counseling. Recent ED visit for acute bronchitis, resolved with antibiotics. Renal function showing early decline (eGFR 68). Patient would benefit from intensified diabetes and COPD management, smoking cessation critical.'
-            },
-            {
-                id: 'P003',
-                name: 'Emily Rodriguez',
-                dob: '1992-06-08',
-                age: 32,
-                mrn: 'MRN-328457',
-                insurance: 'Aetna - HMO',
-                primaryPhysician: 'Dr. Jennifer Park',
-                lastVisit: '2025-01-12',
-                conditions: ['Hypothyroidism', 'Anxiety Disorder'],
-                medications: ['Levothyroxine 75mcg daily', 'Escitalopram 10mg daily'],
-                epic: {
-                    status: 'synced',
-                    lastSync: '2025-01-16 03:15 PM',
-                    records: [
-                        {
-                            date: '2025-01-12',
-                            type: 'Annual Physical',
-                            provider: 'Dr. Jennifer Park - Primary Care',
-                            diagnosis: 'Hypothyroidism stable, Anxiety well-controlled',
-                            notes: 'Patient doing well on current medications. TSH within normal limits. Reports improved anxiety symptoms with current SSRI dose. Discussed reproductive health and contraception options. Up to date on preventive care.',
-                            vitals: { bp: '118/72', weight: '142 lbs', hr: '68 bpm' }
-                        },
-                        {
-                            date: '2024-12-18',
-                            type: 'Lab Results',
-                            provider: 'Quest Diagnostics',
-                            diagnosis: 'Routine thyroid monitoring',
-                            results: {
-                                'TSH': '2.4 mIU/L',
-                                'Free T4': '1.2 ng/dL',
-                                'Vitamin D': '32 ng/mL',
-                                'CBC': 'Normal'
-                            }
-                        },
-                        {
-                            date: '2024-10-05',
-                            type: 'Specialist Consultation',
-                            provider: 'Dr. Robert Kim - Psychiatry',
-                            diagnosis: 'Generalized Anxiety Disorder',
-                            notes: 'Patient reports significant improvement on escitalopram 10mg. GAD-7 score decreased from 15 to 6. Sleep improved. Continue current medication. Encouraged continuation of therapy. Follow up in 6 months or sooner if symptoms worsen.',
-                        }
-                    ]
-                },
-                eFax: {
-                    status: 'pending',
-                    lastReceived: '2025-01-14 09:18 AM',
-                    documents: [
-                        {
-                            date: '2025-01-14',
-                            from: 'Women\'s Health Associates',
-                            type: 'GYN Annual Exam Results',
-                            pages: 2,
-                            preview: 'ANNUAL GYNECOLOGICAL EXAMINATION - Normal pelvic exam. Pap smear: Negative for intraepithelial lesion or malignancy. HPV test: Negative. Recommend routine follow-up in 3 years per guidelines.',
-                            urgent: false
-                        },
-                        {
-                            date: '2024-12-22',
-                            from: 'Boston Mental Health Center',
-                            type: 'Therapy Session Summary',
-                            pages: 1,
-                            preview: 'PATIENT PROGRESS NOTE - Continues to make good progress with CBT techniques for anxiety management. Reports using breathing exercises and cognitive restructuring successfully in stressful situations. Next appointment scheduled.',
-                            urgent: false
-                        }
-                    ]
-                },
-                completedRecords: {
-                    totalRecords: 31,
-                    providers: 6,
-                    yearsSpan: 8,
-                    categories: {
-                        'Office Visits': 15,
-                        'Lab Results': 8,
-                        'Specialist Consultations': 5,
-                        'Preventive Care': 3
-                    }
-                },
-                clinicalSummary: '32-year-old female with well-controlled hypothyroidism on levothyroxine and generalized anxiety disorder responding well to escitalopram and therapy. Recent TSH within normal limits. Mental health stable with GAD-7 score improvement from 15 to 6. Up to date on preventive care including recent normal GYN exam. No acute medical concerns.'
-            }
-        ];
-        
-        let currentPatient = 0;
-        let currentDoctorPatient = 0;
-        
-        // View switching
-        function showView(view) {
-            document.querySelectorAll('.view-section').forEach(section => {
-                section.classList.remove('active');
-            });
+        let epicSynced = false;
+        let uploadedFiles = [];
+
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(page + '-page').classList.add('active');
             
-            if (view === 'landing') {
-                document.getElementById('landing').classList.add('active');
-            } else if (view === 'patient') {
-                document.getElementById('patient-view').classList.add('active');
-                loadPatientData(currentPatient);
-            } else if (view === 'doctor-list') {
-                document.getElementById('doctor-list').classList.add('active');
+            if (page === 'view-records') {
+                loadRecordsTimeline();
             }
         }
-        
-        // Tab switching
-        function switchTab(index) {
-            // Patient view tabs
-            const tabs = document.querySelectorAll('#patient-view .tab');
-            const contents = document.querySelectorAll('#patient-view .tab-content');
-            
-            tabs.forEach(tab => tab.classList.remove('active'));
-            contents.forEach(content => content.classList.remove('active'));
-            
-            tabs[index].classList.add('active');
-            contents[index].classList.add('active');
-            
-            // Load data based on tab
-            if (index === 2) {
-                loadCompleteHistory(currentPatient);
-            }
-        }
-        
-        function switchDoctorTab(index) {
-            const tabs = document.querySelectorAll('#doctor-view .tab');
-            const contents = document.querySelectorAll('#doctor-view .tab-content');
-            
-            tabs.forEach(tab => tab.classList.remove('active'));
-            contents.forEach(content => content.classList.remove('active'));
-            
-            tabs[index].classList.add('active');
-            contents[index].classList.add('active');
-        }
-        
-        // Patient selection
-        function selectPatient(index) {
-            currentPatient = index;
-            const cards = document.querySelectorAll('#patient-view .patient-card');
-            cards.forEach((card, i) => {
-                if (i === index) {
-                    card.classList.add('selected');
-                } else {
-                    card.classList.remove('selected');
-                }
-            });
-            loadPatientData(index);
-        }
-        
-        function selectDoctorPatient(index) {
-            currentDoctorPatient = index;
-            const cards = document.querySelectorAll('#doctor-view .patient-card');
-            cards.forEach((card, i) => {
-                if (i === index) {
-                    card.classList.add('selected');
-                } else {
-                    card.classList.remove('selected');
-                }
-            });
-            loadDoctorData(index);
-        }
-        
-        // Load patient data
-        function loadPatientData(index) {
-            const patient = patients[index];
-            
-            // Load Epic records
-            const epicContainer = document.getElementById('epic-records');
-            epicContainer.innerHTML = patient.epic.records.map(record => {
-                let content = `<div class="record-content">${record.notes || ''}</div>`;
-                
-                if (record.results) {
-                    content = '<div class="lab-results">' +
-                        Object.entries(record.results).map(([name, value]) =>
-                            `<div class="lab-result">
-                                <div class="lab-name">${name}</div>
-                                <div class="lab-value">${value}</div>
-                            </div>`
-                        ).join('') +
-                        '</div>';
-                }
-                
-                if (record.vitals) {
-                    content += '<div class="lab-results">' +
-                        Object.entries(record.vitals).map(([name, value]) =>
-                            `<div class="lab-result">
-                                <div class="lab-name">${name.toUpperCase()}</div>
-                                <div class="lab-value">${value}</div>
-                            </div>`
-                        ).join('') +
-                        '</div>';
-                }
-                
-                return `
-                    <div class="record-item">
-                        <div class="record-header">
-                            <div>
-                                <div class="record-title">${record.type}</div>
-                                <div class="record-date">${new Date(record.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
-                            </div>
-                            <span class="status-badge status-synced">Verified</span>
-                        </div>
-                        <div class="record-provider">${record.provider}</div>
-                        <div style="font-weight: 600; margin-bottom: 8px;">${record.diagnosis}</div>
-                        ${content}
-                    </div>
+
+        function syncEpic() {
+            const section = document.getElementById('epic-sync-section');
+            section.className = 'epic-sync syncing';
+            section.innerHTML = `
+                <div class="sync-icon spinning">⚙️</div>
+                <h3>Syncing with Epic MyChart...</h3>
+                <p style="margin: 12px 0; color: #78350f;">Pulling your medical records</p>
+            `;
+
+            setTimeout(() => {
+                epicSynced = true;
+                section.className = 'epic-sync synced';
+                section.innerHTML = `
+                    <div class="sync-icon">✓</div>
+                    <h3>Epic Records Synced Successfully!</h3>
+                    <p style="margin: 12px 0; color: #065f46;">156 records imported • Last synced: ${new Date().toLocaleString()}</p>
+                    <button class="btn btn-secondary" onclick="syncEpic()" style="margin-top: 12px;">Sync Again</button>
                 `;
-            }).join('');
-            
-            // Load eFax documents
-            const efaxContainer = document.getElementById('efax-documents');
-            efaxContainer.innerHTML = patient.eFax.documents.map(doc => `
-                <div class="fax-document ${doc.urgent ? 'urgent' : ''}">
-                    <div class="fax-info">
-                        <div class="fax-header">
-                            <span class="fax-icon">📄</span>
-                            <div>
-                                <div class="record-title">${doc.type}</div>
-                                ${doc.urgent ? '<span class="status-badge status-action-required">URGENT</span>' : ''}
-                            </div>
-                        </div>
-                        <div class="fax-meta">
-                            <strong>From:</strong> ${doc.from} • 
-                            <strong>Received:</strong> ${new Date(doc.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} • 
-                            <strong>Pages:</strong> ${doc.pages}
-                        </div>
-                        <div class="fax-preview">${doc.preview}</div>
-                        <div class="fax-actions">
-                            <button class="btn btn-primary btn-sm">Review Document</button>
-                            <button class="btn btn-secondary btn-sm">Add to Records</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+            }, 2500);
         }
-        
-        // Load complete history
-        function loadCompleteHistory(index) {
-            const patient = patients[index];
-            const stats = patient.completedRecords;
-            
-            document.getElementById('total-records').textContent = stats.totalRecords;
-            document.getElementById('providers-count').textContent = stats.providers;
-            document.getElementById('years-span').textContent = stats.yearsSpan;
-            
-            const categoryContainer = document.getElementById('category-breakdown');
-            categoryContainer.innerHTML = Object.entries(stats.categories).map(([category, count]) => `
-                <div class="category-item">
-                    <span class="category-name">${category}</span>
-                    <span class="category-count">${count}</span>
-                </div>
-            `).join('');
-            
-            // Timeline combines Epic and eFax
-            const timelineContainer = document.getElementById('complete-timeline');
-            const allRecords = [
-                ...patient.epic.records.map(r => ({ ...r, source: 'Epic' })),
-                ...patient.eFax.documents.map(d => ({
-                    date: d.date,
-                    type: d.type,
-                    provider: d.from,
-                    notes: d.preview,
-                    source: 'eFax'
-                }))
-            ].sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            timelineContainer.innerHTML = allRecords.slice(0, 8).map(record => `
-                <div class="timeline-item">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-                        <div class="record-date">${new Date(record.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
-                        <span class="status-badge ${record.source === 'Epic' ? 'status-synced' : 'status-pending'}">${record.source}</span>
-                    </div>
-                    <div class="record-title">${record.type}</div>
-                    <div class="record-provider">${record.provider}</div>
-                    <p style="margin-top: 8px; font-size: 14px;">${record.notes?.substring(0, 150)}${record.notes?.length > 150 ? '...' : ''}</p>
-                </div>
-            `).join('');
+
+        function sendReminders() {
+            alert('✓ Records sent to Dr. Martinez and Dr. Kim!\n\nThey will receive your complete medical history within 24 hours.');
         }
+
+        // Drag and drop
+        const uploadZone = document.getElementById('upload-zone');
         
-        // Load doctor data
-        function loadDoctorData(index) {
-            const patient = patients[index];
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragging');
+        });
+        
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragging');
+        });
+        
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragging');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        function handleFiles(files) {
+            const container = document.getElementById('uploaded-files');
             
-            // Patient info header
-            const infoContainer = document.getElementById('doctor-patient-info');
-            infoContainer.innerHTML = `
-                <h3>${patient.name}</h3>
-                <div class="patient-info-grid">
-                    <div class="info-item">
-                        <span class="info-label">Date of Birth</span>
-                        <span class="info-value">${new Date(patient.dob).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} (${patient.age} years)</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">MRN</span>
-                        <span class="info-value">${patient.mrn}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Insurance</span>
-                        <span class="info-value">${patient.insurance}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Last Visit</span>
-                        <span class="info-value">${new Date(patient.lastVisit).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Active Conditions</span>
-                        <span class="info-value">${patient.conditions.join(', ')}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Current Medications</span>
-                        <span class="info-value">${patient.medications.length} active</span>
-                    </div>
-                </div>
-            `;
-            
-            // Clinical summary
-            const summaryContainer = document.getElementById('clinical-summary');
-            summaryContainer.innerHTML = `
-                <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                    <h4 style="color: #1e40af; margin-bottom: 12px;">AI-Generated Clinical Summary</h4>
-                    <p>${patient.clinicalSummary}</p>
-                </div>
-                
-                <h4 style="margin-top: 30px; margin-bottom: 16px;">Current Medications</h4>
-                <ul class="medication-list">
-                    ${patient.medications.map(med => `<li>${med}</li>`).join('')}
-                </ul>
-                
-                ${patient.eFax.status === 'action-required' ? `
-                    <div class="alert-banner" style="margin-top: 30px;">
-                        <span class="alert-icon">⚠️</span>
-                        <div class="alert-content">
-                            <div class="alert-title">Action Required</div>
-                            <div>New urgent eFax documents require review. Check the "Incoming eFax" tab.</div>
-                        </div>
-                    </div>
-                ` : ''}
-            `;
-            
-            // Epic data
-            const epicContainer = document.getElementById('doctor-epic-data');
-            epicContainer.innerHTML = `
-                <div style="background: #f0fdf4; border-left: 4px solid #10b981; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong>Epic MyChart Integration</strong>
-                            <div style="font-size: 14px; color: #64748b; margin-top: 4px;">Last synced: ${patient.epic.lastSync}</div>
-                        </div>
-                        <span class="status-badge status-synced">Connected</span>
-                    </div>
-                </div>
-                
-                ${patient.epic.records.map(record => {
-                    let content = record.notes ? `<div class="record-content">${record.notes}</div>` : '';
-                    
-                    if (record.results) {
-                        content = '<div class="lab-results">' +
-                            Object.entries(record.results).map(([name, value]) =>
-                                `<div class="lab-result">
-                                    <div class="lab-name">${name}</div>
-                                    <div class="lab-value">${value}</div>
-                                </div>`
-                            ).join('') +
-                            '</div>';
-                    }
-                    
-                    if (record.vitals) {
-                        content += '<div class="lab-results">' +
-                            Object.entries(record.vitals).map(([name, value]) =>
-                                `<div class="lab-result">
-                                    <div class="lab-name">${name.toUpperCase()}</div>
-                                    <div class="lab-value">${value}</div>
-                                </div>`
-                            ).join('') +
-                            '</div>';
-                    }
-                    
-                    return `
-                        <div class="record-item">
-                            <div class="record-header">
-                                <div>
-                                    <div class="record-title">${record.type}</div>
-                                    <div class="record-date">${new Date(record.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
-                                </div>
-                                <span class="status-badge status-synced">Epic</span>
-                            </div>
-                            <div class="record-provider">${record.provider}</div>
-                            <div style="font-weight: 600; margin-bottom: 8px;">${record.diagnosis}</div>
-                            ${content}
-                        </div>
-                    `;
-                }).join('')}
-            `;
-            
-            // eFax data
-            const efaxContainer = document.getElementById('doctor-efax-data');
-            efaxContainer.innerHTML = `
-                <div style="background: ${patient.eFax.status === 'action-required' ? '#fef2f2' : '#f9fafb'}; border-left: 4px solid ${patient.eFax.status === 'action-required' ? '#dc2626' : '#64748b'}; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong>Incoming eFax Documents</strong>
-                            <div style="font-size: 14px; color: #64748b; margin-top: 4px;">Last received: ${patient.eFax.lastReceived}</div>
-                        </div>
-                        <span class="status-badge ${patient.eFax.status === 'action-required' ? 'status-action-required' : 'status-pending'}">${patient.eFax.documents.length} Documents</span>
-                    </div>
-                </div>
-                
-                ${patient.eFax.documents.map(doc => `
-                    <div class="fax-document ${doc.urgent ? 'urgent' : ''}">
-                        <div class="fax-info">
-                            <div class="fax-header">
-                                <span class="fax-icon">📠</span>
-                                <div style="flex: 1;">
-                                    <div class="record-title">${doc.type}</div>
-                                    ${doc.urgent ? '<span class="status-badge status-action-required" style="margin-left: 8px;">URGENT REVIEW</span>' : ''}
-                                </div>
-                            </div>
-                            <div class="fax-meta">
-                                <strong>From:</strong> ${doc.from} • 
-                                <strong>Received:</strong> ${new Date(doc.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} • 
-                                <strong>Pages:</strong> ${doc.pages}
-                            </div>
-                            <div class="fax-preview">${doc.preview}</div>
-                            <div class="fax-actions">
-                                <button class="btn btn-primary btn-sm">View Full Document</button>
-                                <button class="btn btn-secondary btn-sm">Add to Chart</button>
-                                <button class="btn btn-secondary btn-sm">Forward to Specialist</button>
-                            </div>
-                        </div>
+            Array.from(files).forEach(file => {
+                uploadedFiles.push({
+                    name: file.name,
+                    size: (file.size / 1024).toFixed(1) + ' KB',
+                    date: new Date().toLocaleDateString()
+                });
+            });
+
+            container.innerHTML = `
+                <h3 style="margin-top: 30px;">Uploaded Files (${uploadedFiles.length})</h3>
+                ${uploadedFiles.map(file => `
+                    <div style="padding: 16px; background: #f9fafb; border-radius: 6px; margin: 12px 0; border-left: 4px solid #10b981;">
+                        <div style="font-weight: 600;">${file.name}</div>
+                        <div style="font-size: 14px; color: #64748b; margin-top: 4px;">${file.size} • Uploaded ${file.date}</div>
                     </div>
                 `).join('')}
             `;
-            
-            // Complete records
-            const completeContainer = document.getElementById('doctor-complete-records');
-            const stats = patient.completedRecords;
-            completeContainer.innerHTML = `
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number">${stats.totalRecords}</div>
-                        <div class="stat-label">Total Records</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">${stats.providers}</div>
-                        <div class="stat-label">Healthcare Providers</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">${stats.yearsSpan}</div>
-                        <div class="stat-label">Years of History</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">${patient.medications.length}</div>
-                        <div class="stat-label">Active Medications</div>
-                    </div>
-                </div>
-                
-                <h4 style="margin-top: 30px; margin-bottom: 16px;">Records by Category</h4>
-                <div class="category-breakdown">
-                    ${Object.entries(stats.categories).map(([category, count]) => `
-                        <div class="category-item">
-                            <span class="category-name">${category}</span>
-                            <span class="category-count">${count}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
         }
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            loadPatientData(0);
-        });
+
+        function loadRecordsTimeline() {
+            const records = [
+                { date: '2025-01-14', type: 'CF Clinic Visit', provider: 'Dr. Sarah Martinez', source: 'Epic', notes: 'FEV1 82% predicted, weight stable' },
+                { date: '2025-01-12', type: 'Lab Results - A1C', provider: 'Quest Diagnostics', source: 'Epic', notes: 'A1C: 6.8%, well controlled' },
+                { date: '2025-01-10', type: 'PFT Results', provider: 'Pulmonary Lab', source: 'eFax', notes: 'Spirometry shows improvement' },
+                { date: '2024-12-28', type: 'Prescription Refill - Trikafta', provider: 'CF Pharmacy', source: 'Epic', notes: '90-day supply approved' }
+            ];
+
+            document.getElementById('records-timeline').innerHTML = records.map(record => `
+                <div style="padding: 20px; border-left: 4px solid ${record.source === 'Epic' ? '#2563eb' : record.source === 'eFax' ? '#8b5cf6' : '#10b981'}; margin: 16px 0; background: #f9fafb; border-radius: 6px;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 12px;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 16px;">${record.type}</div>
+                            <div style="color: #64748b; font-size: 14px; margin-top: 4px;">${record.provider} • ${new Date(record.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                            <div style="margin-top: 8px; font-size: 14px;">${record.notes}</div>
+                        </div>
+                        <span style="background: ${record.source === 'Epic' ? '#dbeafe' : record.source === 'eFax' ? '#ede9fe' : '#d1fae5'}; color: ${record.source === 'Epic' ? '#1e40af' : record.source === 'eFax' ? '#6b21a8' : '#065f46'}; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">${record.source}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
     </script>
 </body>
 </html>
