@@ -4,12 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HealthSync Patient Portal</title>
+    <script src="patients-data.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -18,49 +15,10 @@
             background: #f8fafc;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
         
-        nav {
-            padding: 20px 0;
-            background: white;
-            border-bottom: 1px solid #e5e5e5;
-        }
-        
-        .nav-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 24px;
-            font-weight: 600;
-            color: #2563eb;
-        }
-        
-        .doctor-link {
-            color: #64748b;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        
-        .doctor-link:hover {
-            color: #2563eb;
-        }
-        
-        .page {
-            display: none;
-            padding: 40px 0;
-            min-height: calc(100vh - 200px);
-        }
-        
-        .page.active {
-            display: block;
-        }
+        nav { padding: 20px 0; background: white; border-bottom: 1px solid #e5e5e5; }
+        .logo { font-size: 24px; font-weight: 600; color: #2563eb; }
         
         .patient-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -70,18 +28,48 @@
             margin: 30px 0;
         }
         
-        .patient-name {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
+        .patient-name { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
         
-        .patient-meta {
-            font-size: 16px;
-            opacity: 0.9;
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
         }
         
         .status-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+        }
+        
+        .status-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 12px;
+        }
+        
+        .status-complete { background: #10b981; }
+        .status-pending { background: #f59e0b; }
+        .status-urgent { background: #dc2626; }
+        
+        .status-label {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+        
+        .status-value {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-card {
             background: white;
             border-radius: 12px;
             padding: 30px;
@@ -89,47 +77,34 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.06);
         }
         
-        .status-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+        h2 { font-size: 24px; margin-bottom: 16px; }
+        
+        .upload-zone {
+            border: 3px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 60px 40px;
+            text-align: center;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s;
             margin: 20px 0;
         }
         
-        .status-item {
-            padding: 24px;
-            background: #f9fafb;
-            border-radius: 8px;
-            border-left: 4px solid #2563eb;
+        .upload-zone:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
         }
         
-        .status-item.pending {
-            border-left-color: #f59e0b;
-            background: #fffbeb;
+        .upload-zone.dragging {
+            border-color: #2563eb;
+            background: #dbeafe;
         }
         
-        .status-item.complete {
-            border-left-color: #10b981;
-            background: #f0fdf4;
-        }
-        
-        .status-label {
-            font-size: 14px;
-            color: #64748b;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .status-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1e293b;
-        }
+        .upload-icon { font-size: 64px; margin-bottom: 20px; }
         
         .btn {
-            padding: 16px 32px;
-            font-size: 16px;
+            padding: 12px 24px;
+            font-size: 14px;
             font-weight: 500;
             border-radius: 8px;
             cursor: pointer;
@@ -145,7 +120,6 @@
         
         .btn-primary:hover {
             background: #1d4ed8;
-            transform: translateY(-1px);
         }
         
         .btn-secondary {
@@ -154,77 +128,7 @@
             border: 2px solid #2563eb;
         }
         
-        .btn-secondary:hover {
-            background: #eff6ff;
-        }
-        
-        .upload-section {
-            background: white;
-            border-radius: 12px;
-            padding: 40px;
-            margin: 20px 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
-        }
-        
-        .upload-zone {
-            border: 3px dashed #cbd5e1;
-            border-radius: 12px;
-            padding: 60px 40px;
-            text-align: center;
-            background: #f8fafc;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .upload-zone:hover {
-            border-color: #2563eb;
-            background: #eff6ff;
-        }
-        
-        .upload-zone.dragging {
-            border-color: #2563eb;
-            background: #dbeafe;
-        }
-        
-        .upload-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-        }
-        
-        .epic-sync {
-            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-            border: 2px solid #bae6fd;
-            border-radius: 12px;
-            padding: 30px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        
-        .epic-sync.syncing {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border-color: #fcd34d;
-        }
-        
-        .epic-sync.synced {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            border-color: #6ee7b7;
-        }
-        
-        .sync-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-        }
-        
-        .sync-icon.spinning {
-            animation: spin 2s linear infinite;
-        }
-        
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
-        .fax-info {
+        .info-box {
             background: #f0f9ff;
             border: 2px solid #bae6fd;
             border-radius: 12px;
@@ -233,197 +137,233 @@
         }
         
         .fax-number {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 700;
             color: #0c4a6e;
             margin: 12px 0;
             font-family: monospace;
         }
         
-        .reminder-card {
-            background: #fef3c7;
-            border-left: 4px solid #f59e0b;
-            border-radius: 8px;
-            padding: 20px;
+        .import-options {
+            display: flex;
+            gap: 12px;
             margin: 20px 0;
+            flex-wrap: wrap;
         }
         
-        h2 {
-            font-size: 28px;
-            margin-bottom: 12px;
+        select {
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            min-width: 200px;
         }
         
-        h3 {
-            font-size: 20px;
-            margin-bottom: 12px;
+        .record-item {
+            padding: 16px;
+            background: #f9fafb;
+            border-left: 4px solid #2563eb;
+            border-radius: 6px;
+            margin: 12px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .record-item.can-delete {
+            background: #fef2f2;
+            border-left-color: #dc2626;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: #64748b;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+        
+        .tab.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
         }
     </style>
 </head>
 <body>
     <nav>
         <div class="container">
-            <div class="nav-content">
-                <div class="logo">HealthSync Patient Portal</div>
-                <a href="doctor.html" class="doctor-link">Doctor Portal →</a>
-            </div>
+            <div class="logo">HealthSync Patient Portal</div>
         </div>
     </nav>
 
-    <!-- Status Overview Page -->
-    <div id="status-page" class="page active">
-        <div class="container">
-            <div class="patient-header">
-                <div class="patient-name">Maya Chen</div>
-                <div class="patient-meta">MRN: MRN-CF2847 • DOB: 08/14/2002 (Age 22) • Cystic Fibrosis</div>
+    <div class="container">
+        <!-- Patient Header -->
+        <div class="patient-header" id="patient-header"></div>
+
+        <!-- Status Overview -->
+        <div class="status-grid" id="status-grid"></div>
+
+        <!-- Tabs -->
+        <div class="section-card">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab(0)">Upload Records</button>
+                <button class="tab" onclick="switchTab(1)">My Records</button>
             </div>
 
-            <div class="status-card">
-                <h2>Your Record Status</h2>
-                <p style="color: #64748b; margin-bottom: 20px;">Keep your medical records up to date so your care team has complete information</p>
+            <!-- Tab 1: Upload Records -->
+            <div class="tab-content active" id="tab-0">
+                <h2>Add Your Medical Records</h2>
                 
-                <div class="status-grid">
-                    <div class="status-item complete">
-                        <div class="status-label">Epic Records</div>
-                        <div class="status-value">✓ Synced</div>
-                        <p style="font-size: 14px; color: #64748b; margin-top: 8px;">Last sync: Today 9:23 AM</p>
+                <!-- Import from EMR -->
+                <div style="margin: 30px 0;">
+                    <h3 style="margin-bottom: 16px;">Import from Your EMR</h3>
+                    <div class="import-options">
+                        <select id="emr-select">
+                            <option value="">Select your provider's system</option>
+                            <option value="epic">Epic MyChart</option>
+                            <option value="athena">Athena Health</option>
+                            <option value="cerner">Cerner</option>
+                            <option value="allscripts">Allscripts</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="importFromEMR()">Connect & Import</button>
                     </div>
-                    
-                    <div class="status-item pending">
-                        <div class="status-label">Uploaded Documents</div>
-                        <div class="status-value">3 Pending</div>
-                        <p style="font-size: 14px; color: #64748b; margin-top: 8px;">Awaiting review</p>
+                </div>
+
+                <!-- Drag & Drop Upload -->
+                <div>
+                    <h3 style="margin-bottom: 16px;">Upload Documents</h3>
+                    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+                        <div class="upload-icon">📄</div>
+                        <h3>Drag & drop files here or click to browse</h3>
+                        <p style="color: #64748b; margin-top: 12px;">PDF, DOCX, JPG, PNG accepted</p>
                     </div>
-                    
-                    <div class="status-item">
-                        <div class="status-label">Total Records</div>
-                        <div class="status-value">347</div>
-                        <p style="font-size: 14px; color: #64748b; margin-top: 8px;">Across 15 providers</p>
+                    <input type="file" id="file-input" multiple style="display: none;" onchange="handleFiles(this.files)">
+                    <div id="uploaded-files"></div>
+                </div>
+
+                <!-- Request from Provider -->
+                <div style="margin-top: 40px;">
+                    <h3 style="margin-bottom: 16px;">Request Records from Provider</h3>
+                    <p style="color: #64748b; margin-bottom: 12px;">We'll send a request to your provider to release records to you</p>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <input type="text" placeholder="Provider name" style="flex: 1; min-width: 200px; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px;">
+                        <button class="btn btn-primary">Send Request</button>
+                    </div>
+                </div>
+
+                <!-- Fax & Email Info -->
+                <div class="info-box" style="margin-top: 40px;">
+                    <h3 style="color: #0c4a6e; margin-bottom: 16px;">Have your provider send records directly</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <div>
+                            <p style="font-weight: 600; margin-bottom: 8px;">📠 Fax Number</p>
+                            <div class="fax-number">(617) 555-HLTH</div>
+                            <p style="font-size: 14px; color: #64748b;">Include your MRN: <span id="patient-mrn"></span></p>
+                        </div>
+                        <div>
+                            <p style="font-weight: 600; margin-bottom: 8px;">📧 Email Address</p>
+                            <div class="fax-number" style="font-size: 20px;">records@healthsync.com</div>
+                            <p style="font-size: 14px; color: #64748b;">Subject: Records for <span id="patient-name-email"></span></p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="reminder-card">
-                <h3>⏰ Pending Action Required</h3>
-                <p style="margin: 12px 0;">You have 2 specialists who need your updated records:</p>
-                <ul style="margin: 12px 0 12px 20px;">
-                    <li>Dr. Sarah Martinez (Pulmonology) - CF Clinic</li>
-                    <li>Dr. Robert Kim (Endocrinology) - CFRD Management</li>
-                </ul>
-                <button class="btn btn-primary" style="margin-top: 12px;" onclick="sendReminders()">Send Records to Doctors</button>
-            </div>
-
-            <div style="display: flex; gap: 20px; margin-top: 30px; flex-wrap: wrap;">
-                <button class="btn btn-primary" onclick="showPage('upload')">Upload New Records</button>
-                <button class="btn btn-secondary" onclick="showPage('view-records')">View All My Records</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Upload Records Page -->
-    <div id="upload-page" class="page">
-        <div class="container">
-            <button class="btn btn-secondary" onclick="showPage('status')" style="margin-bottom: 20px;">← Back to Status</button>
-            
-            <h2>Add Medical Records</h2>
-            <p style="color: #64748b; margin-bottom: 30px;">Upload documents or sync from Epic MyChart</p>
-
-            <!-- Epic Sync -->
-            <div id="epic-sync-section" class="epic-sync">
-                <div class="sync-icon">🏥</div>
-                <h3>Sync from Epic MyChart</h3>
-                <p style="margin: 12px 0 20px 0; color: #64748b;">Automatically pull all your records from Epic</p>
-                <button class="btn btn-primary" onclick="syncEpic()">Connect Epic MyChart</button>
-            </div>
-
-            <!-- File Upload -->
-            <div class="upload-section">
-                <h3>Upload Documents</h3>
-                <p style="color: #64748b; margin-bottom: 20px;">Drag and drop files or click to browse</p>
-                
-                <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
-                    <div class="upload-icon">📄</div>
-                    <h3>Drop files here or click to upload</h3>
-                    <p style="color: #64748b; margin-top: 12px;">PDF, DOCX, JPG, PNG • Photos of paper records are welcome</p>
-                </div>
-                <input type="file" id="file-input" multiple style="display: none;" onchange="handleFiles(this.files)">
-                
-                <div id="uploaded-files"></div>
-            </div>
-
-            <!-- Fax Instructions -->
-            <div class="fax-info">
-                <h3>📠 Have your doctor fax records directly</h3>
-                <p style="margin: 12px 0;">Give this number to any provider who needs to send records:</p>
-                <div class="fax-number">(617) 555-HLTH</div>
-                <p style="font-size: 14px; color: #64748b;">Include your name and MRN: MRN-CF2847</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- View Records Page -->
-    <div id="view-records-page" class="page">
-        <div class="container">
-            <button class="btn btn-secondary" onclick="showPage('status')" style="margin-bottom: 20px;">← Back to Status</button>
-            
-            <h2>My Complete Medical Records</h2>
-            <p style="color: #64748b; margin-bottom: 30px;">All your records from Epic, uploads, and faxed documents</p>
-
-            <div class="status-card">
-                <div id="records-timeline"></div>
+            <!-- Tab 2: My Records -->
+            <div class="tab-content" id="tab-1">
+                <h2>All My Records</h2>
+                <p style="color: #64748b; margin-bottom: 20px;">Review and manage your medical records</p>
+                <div id="records-list"></div>
             </div>
         </div>
     </div>
 
     <script>
-        let epicSynced = false;
+        // Get patient ID from URL or default to first patient
+        const urlParams = new URLSearchParams(window.location.search);
+        const patientId = parseInt(urlParams.get('patient')) || 1;
+        const currentPatient = getPatientById(patientId);
+        
         let uploadedFiles = [];
 
-        function showPage(page) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(page + '-page').classList.add('active');
-            
-            if (page === 'view-records') {
-                loadRecordsTimeline();
-            }
-        }
-
-        function syncEpic() {
-            const section = document.getElementById('epic-sync-section');
-            section.className = 'epic-sync syncing';
-            section.innerHTML = `
-                <div class="sync-icon spinning">⚙️</div>
-                <h3>Syncing with Epic MyChart...</h3>
-                <p style="margin: 12px 0; color: #78350f;">Pulling your medical records</p>
+        // Load patient data
+        function loadPatientData() {
+            // Header
+            document.getElementById('patient-header').innerHTML = `
+                <div class="patient-name">${currentPatient.name}</div>
+                <div style="opacity: 0.9; margin-top: 8px;">MRN: ${currentPatient.mrn} • ${currentPatient.diagnosis}</div>
             `;
 
-            setTimeout(() => {
-                epicSynced = true;
-                section.className = 'epic-sync synced';
-                section.innerHTML = `
-                    <div class="sync-icon">✓</div>
-                    <h3>Epic Records Synced Successfully!</h3>
-                    <p style="margin: 12px 0; color: #065f46;">156 records imported • Last synced: ${new Date().toLocaleString()}</p>
-                    <button class="btn btn-secondary" onclick="syncEpic()" style="margin-top: 12px;">Sync Again</button>
-                `;
-            }, 2500);
+            // Status grid
+            document.getElementById('status-grid').innerHTML = `
+                <div class="status-card">
+                    <div class="status-label">Epic Records</div>
+                    <div class="status-value">
+                        <span class="status-indicator status-${currentPatient.status.epicSync}"></span>
+                        ${currentPatient.status.epicSync === 'complete' ? 'Synced' : 'Not Synced'}
+                    </div>
+                </div>
+                <div class="status-card">
+                    <div class="status-label">Document Uploads</div>
+                    <div class="status-value">
+                        <span class="status-indicator status-${currentPatient.status.uploadsComplete ? 'complete' : 'pending'}"></span>
+                        ${currentPatient.status.uploadsComplete ? 'Complete' : 'Pending'}
+                    </div>
+                </div>
+                <div class="status-card">
+                    <div class="status-label">Overall Status</div>
+                    <div class="status-value">
+                        <span class="status-indicator status-${currentPatient.status.recordsComplete}"></span>
+                        ${currentPatient.status.pendingActions} action${currentPatient.status.pendingActions !== 1 ? 's' : ''} needed
+                    </div>
+                </div>
+            `;
+
+            // Patient info in forms
+            document.getElementById('patient-mrn').textContent = currentPatient.mrn;
+            document.getElementById('patient-name-email').textContent = currentPatient.name;
+
+            // Load records
+            loadRecords();
         }
 
-        function sendReminders() {
-            alert('✓ Records sent to Dr. Martinez and Dr. Kim!\n\nThey will receive your complete medical history within 24 hours.');
+        // Import from EMR
+        function importFromEMR() {
+            const emr = document.getElementById('emr-select').value;
+            if (!emr) {
+                alert('Please select your EMR system');
+                return;
+            }
+            alert(`✓ Connecting to ${emr.toUpperCase()}...\n\nYou'll be redirected to login and authorize access to your records.`);
         }
 
-        // Drag and drop
+        // Handle file upload
         const uploadZone = document.getElementById('upload-zone');
-        
         uploadZone.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadZone.classList.add('dragging');
         });
-        
         uploadZone.addEventListener('dragleave', () => {
             uploadZone.classList.remove('dragging');
         });
-        
         uploadZone.addEventListener('drop', (e) => {
             e.preventDefault();
             uploadZone.classList.remove('dragging');
@@ -431,8 +371,6 @@
         });
 
         function handleFiles(files) {
-            const container = document.getElementById('uploaded-files');
-            
             Array.from(files).forEach(file => {
                 uploadedFiles.push({
                     name: file.name,
@@ -441,10 +379,10 @@
                 });
             });
 
-            container.innerHTML = `
+            document.getElementById('uploaded-files').innerHTML = `
                 <h3 style="margin-top: 30px;">Uploaded Files (${uploadedFiles.length})</h3>
-                ${uploadedFiles.map(file => `
-                    <div style="padding: 16px; background: #f9fafb; border-radius: 6px; margin: 12px 0; border-left: 4px solid #10b981;">
+                ${uploadedFiles.map((file, index) => `
+                    <div style="padding: 16px; background: #f0fdf4; border-left: 4px solid #10b981; border-radius: 6px; margin: 12px 0;">
                         <div style="font-weight: 600;">${file.name}</div>
                         <div style="font-size: 14px; color: #64748b; margin-top: 4px;">${file.size} • Uploaded ${file.date}</div>
                     </div>
@@ -452,27 +390,35 @@
             `;
         }
 
-        function loadRecordsTimeline() {
-            const records = [
-                { date: '2025-01-14', type: 'CF Clinic Visit', provider: 'Dr. Sarah Martinez', source: 'Epic', notes: 'FEV1 82% predicted, weight stable' },
-                { date: '2025-01-12', type: 'Lab Results - A1C', provider: 'Quest Diagnostics', source: 'Epic', notes: 'A1C: 6.8%, well controlled' },
-                { date: '2025-01-10', type: 'PFT Results', provider: 'Pulmonary Lab', source: 'eFax', notes: 'Spirometry shows improvement' },
-                { date: '2024-12-28', type: 'Prescription Refill - Trikafta', provider: 'CF Pharmacy', source: 'Epic', notes: '90-day supply approved' }
-            ];
-
-            document.getElementById('records-timeline').innerHTML = records.map(record => `
-                <div style="padding: 20px; border-left: 4px solid ${record.source === 'Epic' ? '#2563eb' : record.source === 'eFax' ? '#8b5cf6' : '#10b981'}; margin: 16px 0; background: #f9fafb; border-radius: 6px;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 12px;">
-                        <div style="flex: 1;">
-                            <div style="font-weight: 600; font-size: 16px;">${record.type}</div>
-                            <div style="color: #64748b; font-size: 14px; margin-top: 4px;">${record.provider} • ${new Date(record.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
-                            <div style="margin-top: 8px; font-size: 14px;">${record.notes}</div>
+        // Load records
+        function loadRecords() {
+            document.getElementById('records-list').innerHTML = currentPatient.records.map(record => `
+                <div class="record-item ${record.status === 'new' ? 'can-delete' : ''}">
+                    <div>
+                        <div style="font-weight: 600;">${record.type}</div>
+                        <div style="font-size: 14px; color: #64748b; margin-top: 4px;">
+                            ${record.provider} • ${new Date(record.date).toLocaleDateString()} • Source: ${record.source}
                         </div>
-                        <span style="background: ${record.source === 'Epic' ? '#dbeafe' : record.source === 'eFax' ? '#ede9fe' : '#d1fae5'}; color: ${record.source === 'Epic' ? '#1e40af' : record.source === 'eFax' ? '#6b21a8' : '#065f46'}; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">${record.source}</span>
+                    </div>
+                    <div>
+                        <button class="btn btn-secondary" style="margin-right: 8px;">View</button>
+                        ${record.status === 'new' ? '<button class="btn btn-secondary" style="background: #fee2e2; color: #991b1b; border-color: #fecaca;">Delete</button>' : ''}
                     </div>
                 </div>
             `).join('');
         }
+
+        // Tab switching
+        function switchTab(index) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.querySelectorAll('.tab')[index].classList.add('active');
+            document.querySelectorAll('.tab-content')[index].classList.add('active');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadPatientData);
     </script>
 </body>
 </html>

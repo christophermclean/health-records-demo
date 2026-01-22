@@ -4,12 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HealthSync Doctor Portal</title>
+    <script src="patients-data.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -18,17 +15,9 @@
             background: #f8fafc;
         }
         
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
         
-        nav {
-            padding: 20px 0;
-            background: white;
-            border-bottom: 1px solid #e5e5e5;
-        }
+        nav { padding: 20px 0; background: white; border-bottom: 1px solid #e5e5e5; }
         
         .nav-content {
             display: flex;
@@ -36,41 +25,25 @@
             align-items: center;
         }
         
-        .logo {
-            font-size: 24px;
-            font-weight: 600;
-            color: #2563eb;
-        }
+        .logo { font-size: 24px; font-weight: 600; color: #2563eb; }
         
-        .patient-link {
+        .nav-link {
             color: #64748b;
             text-decoration: none;
             font-size: 14px;
+            margin-left: 20px;
         }
         
-        .patient-link:hover {
-            color: #2563eb;
-        }
+        .page { display: none; padding: 40px 0; }
+        .page.active { display: block; }
         
-        .page {
-            display: none;
-            padding: 40px 0;
-        }
-        
-        .page.active {
-            display: block;
-        }
-        
-        h2 {
-            font-size: 32px;
-            margin-bottom: 12px;
-        }
+        h1 { font-size: 32px; margin: 30px 0 20px 0; }
         
         .patient-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
-            margin: 30px 0;
+            margin: 20px 0;
         }
         
         .patient-card {
@@ -88,76 +61,12 @@
             box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
         }
         
-        .patient-card-name {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .patient-card-meta {
-            font-size: 14px;
-            color: #64748b;
-            margin-bottom: 12px;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-top: 12px;
-        }
-        
-        .status-urgent {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-        
-        .status-pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-        
-        .status-current {
-            background: #d1fae5;
-            color: #065f46;
-        }
-        
         .patient-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 40px;
             border-radius: 12px;
             margin-bottom: 30px;
-        }
-        
-        .patient-name {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        
-        .patient-info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-            padding: 24px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-        }
-        
-        .info-label {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-bottom: 4px;
-        }
-        
-        .info-value {
-            font-size: 16px;
-            font-weight: 600;
         }
         
         .section-card {
@@ -168,12 +77,6 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.06);
         }
         
-        .section-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-        
         .clinical-summary {
             background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
             border-left: 4px solid #2563eb;
@@ -182,8 +85,34 @@
             line-height: 1.8;
         }
         
+        .tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: #64748b;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+        
+        .tab.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
         .action-item {
-            padding: 20px;
+            padding: 16px;
             background: #f9fafb;
             border-radius: 8px;
             margin: 12px 0;
@@ -200,28 +129,19 @@
             border-left-color: #f59e0b;
         }
         
-        .action-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 8px;
-        }
-        
-        .action-title {
-            font-weight: 600;
-            font-size: 16px;
-        }
-        
-        .condition-badge {
-            display: inline-block;
-            padding: 8px 16px;
-            background: #dbeafe;
-            color: #1e40af;
-            border-radius: 20px;
-            font-size: 13px;
+        .btn {
+            padding: 12px 24px;
+            font-size: 14px;
             font-weight: 500;
-            margin: 4px 4px 4px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            background: white;
+            color: #2563eb;
+            border: 2px solid #2563eb;
         }
+        
+        .btn:hover { background: #eff6ff; }
         
         .specialist-card {
             background: #f0f9ff;
@@ -231,56 +151,12 @@
             margin: 12px 0;
         }
         
-        .specialist-name {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .specialist-specialty {
-            font-size: 14px;
-            color: #0c4a6e;
-        }
-        
-        .btn {
-            padding: 12px 24px;
-            font-size: 14px;
-            font-weight: 500;
-            border-radius: 8px;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-        }
-        
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #1d4ed8;
-        }
-        
-        .btn-secondary {
-            background: white;
-            color: #2563eb;
-            border: 2px solid #2563eb;
-        }
-        
-        .btn-secondary:hover {
-            background: #eff6ff;
-        }
-        
-        .medication-list {
-            list-style: none;
-        }
-        
-        .medication-list li {
-            padding: 8px 0;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        
-        .medication-list li:last-child {
-            border-bottom: none;
+        .record-item {
+            padding: 16px;
+            background: #f9fafb;
+            border-left: 4px solid #2563eb;
+            border-radius: 6px;
+            margin: 12px 0;
         }
     </style>
 </head>
@@ -289,274 +165,160 @@
         <div class="container">
             <div class="nav-content">
                 <div class="logo">HealthSync Doctor Portal</div>
-                <a href="index.html" class="patient-link">← Patient Portal</a>
+                <div>
+                    <a href="admin.html" class="nav-link">Admin Portal</a>
+                    <a href="index.html" class="nav-link">Patient Portal</a>
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- Patient List Page -->
+    <!-- Patient List -->
     <div id="list-page" class="page active">
         <div class="container">
-            <h2>My Patients</h2>
-            <p style="color: #64748b; margin-bottom: 20px;">Click a patient to view their complete medical summary</p>
-            
-            <div class="patient-grid">
-                <div class="patient-card" onclick="showPatient(0)">
-                    <div class="patient-card-name">Maya Chen</div>
-                    <div class="patient-card-meta">
-                        <div>MRN: MRN-CF2847 • Age 22</div>
-                        <div style="margin-top: 4px;">Cystic Fibrosis, CF-Related Diabetes</div>
-                    </div>
-                    <div style="font-size: 13px; color: #64748b; margin-top: 12px;">Last visit: Jan 14, 2025</div>
-                    <span class="status-badge status-urgent">NEW PFT RESULTS</span>
-                </div>
-                
-                <div class="patient-card" onclick="showPatient(1)">
-                    <div class="patient-card-name">Alex Thompson</div>
-                    <div class="patient-card-meta">
-                        <div>MRN: MRN-ONC5921 • Age 19</div>
-                        <div style="margin-top: 4px;">Thyroid Ca s/p Thyroidectomy</div>
-                    </div>
-                    <div style="font-size: 13px; color: #64748b; margin-top: 12px;">Last visit: Jan 10, 2025</div>
-                    <span class="status-badge status-pending">LIPID PANEL DUE</span>
-                </div>
-                
-                <div class="patient-card" onclick="showPatient(2)">
-                    <div class="patient-card-name">Jordan Martinez</div>
-                    <div class="patient-card-meta">
-                        <div>MRN: MRN-DS4182 • Age 20</div>
-                        <div style="margin-top: 4px;">Down Syndrome, CHD s/p repair</div>
-                    </div>
-                    <div style="font-size: 13px; color: #64748b; margin-top: 12px;">Last visit: Jan 12, 2025</div>
-                    <span class="status-badge status-current">UP TO DATE</span>
-                </div>
-            </div>
+            <h1>My Patients</h1>
+            <div class="patient-grid" id="patient-grid"></div>
         </div>
     </div>
 
-    <!-- Patient Detail Page -->
-    <div id="patient-page" class="page">
+    <!-- Patient Detail -->
+    <div id="detail-page" class="page">
         <div class="container">
-            <button class="btn btn-secondary" onclick="showList()" style="margin-bottom: 20px;">← Back to Patient List</button>
+            <button class="btn" onclick="showList()" style="margin-bottom: 20px;">← Back to Patient List</button>
             
             <div class="patient-header" id="patient-header"></div>
             
-            <!-- Clinical Summary -->
             <div class="section-card">
-                <div class="section-title">Clinical Summary</div>
-                <div class="clinical-summary" id="clinical-summary"></div>
-            </div>
-            
-            <!-- Outstanding Actions -->
-            <div class="section-card">
-                <div class="section-title">Outstanding Actions & Care Gaps</div>
-                <div id="outstanding-actions"></div>
-            </div>
-            
-            <!-- Special Care Issues -->
-            <div class="section-card">
-                <div class="section-title">Condition-Specific Care Issues</div>
-                <div id="care-issues"></div>
-            </div>
-            
-            <!-- Current Medications -->
-            <div class="section-card">
-                <div class="section-title">Current Medications</div>
-                <ul class="medication-list" id="medications"></ul>
-            </div>
-            
-            <!-- Subspecialists -->
-            <div class="section-card">
-                <div class="section-title">Involved Subspecialists</div>
-                <div id="subspecialists"></div>
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab(0)">Summary</button>
+                    <button class="tab" onclick="switchTab(1)">Outstanding Actions</button>
+                    <button class="tab" onclick="switchTab(2)">Subspecialists</button>
+                    <button class="tab" onclick="switchTab(3)">All Records</button>
+                </div>
+                
+                <div class="tab-content active" id="tab-0"></div>
+                <div class="tab-content" id="tab-1"></div>
+                <div class="tab-content" id="tab-2"></div>
+                <div class="tab-content" id="tab-3"></div>
             </div>
         </div>
     </div>
 
     <script>
-        const patients = [
-            {
-                name: 'Maya Chen',
-                mrn: 'MRN-CF2847',
-                age: 22,
-                dob: '08/14/2002',
-                diagnosis: 'Cystic Fibrosis (F508del homozygous)',
-                insurance: 'Blue Cross Blue Shield PPO',
-                lastVisit: 'January 14, 2025',
-                conditions: ['Cystic Fibrosis', 'CF-Related Diabetes', 'Pancreatic Insufficiency'],
-                summary: '22-year-old female with cystic fibrosis diagnosed in infancy. Remarkable clinical improvement since starting Trikafta 18 months ago—FEV1 improved from 65% to current 82% predicted. Managing CF-related diabetes with basal insulin, A1C 6.8%. On comprehensive CF regimen. Currently stable with no recent pulmonary exacerbations. Excellent adherence and self-management skills.',
-                medications: [
-                    'Trikafta (Elexacaftor/Tezacaftor/Ivacaftor) 2 tabs AM, 1 tab PM',
-                    'Creon 36,000 units with meals and snacks',
-                    'Insulin degludec 18 units daily',
-                    'Azithromycin 500mg MWF',
-                    'Hypertonic saline 7% nebulized BID',
-                    'Pulmozyme (dornase alfa) nebulized daily'
-                ],
-                actions: [
-                    { title: 'Review New PFT Results', status: 'urgent', details: 'Spirometry from 1/17 shows FEV1 82%, up from baseline. Excellent response to Trikafta continues.', due: 'Today' },
-                    { title: 'Quarterly A1C Check', status: 'due-soon', details: 'Last A1C 6.8% on 12/28. Due for 3-month follow-up for CFRD monitoring.', due: 'Due in 2 weeks' },
-                    { title: 'Annual Chest CT', status: 'normal', details: 'Last CT 12/10 showed mild stable bronchiectasis with improvement on modulator therapy.', due: 'Next due: Dec 2025' }
-                ],
-                careIssues: [
-                    { issue: 'CF Pulmonary Exacerbations', detail: 'Monitor for increased cough, sputum production, decreased FEV1. Has been exacerbation-free for 14 months on Trikafta.' },
-                    { issue: 'CF-Related Diabetes Management', detail: 'Currently on basal insulin only. Monitor A1C quarterly. May need prandial insulin as pancreatic function declines.' },
-                    { issue: 'Medication Adherence', detail: 'Complex regimen requiring multiple daily therapies. Patient demonstrates excellent adherence with support from CF care team.' }
-                ],
-                specialists: [
-                    { name: 'Dr. Sarah Martinez', specialty: 'Pulmonology - CF Center', contact: 'CF Clinic: (617) 555-0123' },
-                    { name: 'Dr. Robert Kim', specialty: 'Endocrinology - CFRD Management', contact: 'Endo Clinic: (617) 555-0145' },
-                    { name: 'Jennifer Walsh, RD', specialty: 'CF Nutritionist', contact: 'Nutrition: (617) 555-0167' },
-                    { name: 'Dr. Lisa Wong', specialty: 'Cardiology - Annual surveillance', contact: 'Cardiology: (617) 555-0189' }
-                ]
-            },
-            {
-                name: 'Alex Thompson',
-                mrn: 'MRN-ONC5921',
-                age: 19,
-                dob: '03/22/2005',
-                diagnosis: 'Papillary Thyroid Carcinoma s/p thyroidectomy',
-                insurance: 'Aetna PPO',
-                lastVisit: 'January 10, 2025',
-                conditions: ['Thyroid Cancer Survivor', 'Hypothyroidism', 'Vocal Cord Paresis', 'Anxiety'],
-                summary: '19-year-old diagnosed with papillary thyroid carcinoma at age 14, s/p total thyroidectomy and RAI. Currently 5 years post-treatment with excellent response—thyroglobulin undetectable. Managing post-surgical vocal cord paresis and hypothyroidism. Anxiety well-controlled. Transitioning to annual surveillance. College freshman, excellent medication adherence.',
-                medications: [
-                    'Levothyroxine 175mcg daily (TSH suppression)',
-                    'Calcium carbonate 1000mg BID',
-                    'Vitamin D3 2000 IU daily',
-                    'Sertraline 50mg daily'
-                ],
-                actions: [
-                    { title: 'Annual Lipid Panel', status: 'due-soon', details: 'Due for annual screening. On TSH suppression therapy which can affect lipids.', due: 'Due in 3 weeks' },
-                    { title: 'Thyroglobulin Surveillance', status: 'normal', details: 'Last Tg <0.1 on 12/15. Continue annual monitoring now that 5 years disease-free.', due: 'Next: Dec 2025' },
-                    { title: 'Neck Ultrasound', status: 'normal', details: 'Last U/S 11/20 showed no evidence of recurrence. Surveillance imaging now annual.', due: 'Next: Nov 2025' },
-                    { title: 'TSH Monitoring', status: 'normal', details: 'Last TSH 0.12 (goal <0.5 for suppression). Continue current levothyroxine dose.', due: 'Next check: Apr 2025' }
-                ],
-                careIssues: [
-                    { issue: 'Cancer Surveillance', detail: '5 years post-treatment, low risk for recurrence. Annual thyroglobulin and neck ultrasound. Can transition to less frequent TSH suppression.' },
-                    { issue: 'Vocal Cord Paresis', detail: 'Right vocal cord paresis stable. Continues voice therapy. ENT follow-up annually.' },
-                    { issue: 'Mental Health', detail: 'History of anxiety related to cancer surveillance. Well-controlled on sertraline. Psychiatry follow-up every 6 months.' }
-                ],
-                specialists: [
-                    { name: 'Dr. Jennifer Park', specialty: 'Endocrinology - Thyroid Cancer', contact: 'Endo: (617) 555-0134' },
-                    { name: 'Dr. Michael Chen', specialty: 'ENT - Voice Clinic', contact: 'ENT: (617) 555-0156' },
-                    { name: 'Dr. Amanda Rodriguez', specialty: 'Psychiatry', contact: 'Mental Health: (617) 555-0178' }
-                ]
-            },
-            {
-                name: 'Jordan Martinez',
-                mrn: 'MRN-DS4182',
-                age: 20,
-                dob: '11/08/2004',
-                diagnosis: 'Down Syndrome with ASD-VSD s/p repair',
-                insurance: 'MassHealth',
-                lastVisit: 'January 12, 2025',
-                conditions: ['Down Syndrome (Trisomy 21)', 'ASD/VSD s/p repair', 'Hypothyroidism', 'Autism Spectrum Disorder', 'OSA'],
-                summary: '20-year-old with Down syndrome, s/p ASD/VSD repair at 9 months with excellent long-term outcome. Also diagnosed with autism, primarily nonverbal but uses AAC device. Managing hypothyroidism. Living in supported group home with good adjustment. Recent cognitive testing shows stable functioning. Excellent family support.',
-                medications: [
-                    'Levothyroxine 88mcg daily',
-                    'Aspirin 81mg daily (cardiology)',
-                    'Melatonin 5mg at bedtime',
-                    'Omega-3 fatty acids 1000mg daily'
-                ],
-                actions: [
-                    { title: 'Tdap Booster', status: 'due-soon', details: 'Last tetanus vaccine at age 10. Due for Tdap booster.', due: 'Due now' },
-                    { title: 'Sleep Study', status: 'normal', details: 'Scheduled for March 2025 to reassess OSA. Previous study showed moderate OSA, declined CPAP.', due: 'Scheduled 3/15/25' },
-                    { title: 'Celiac Screening', status: 'normal', details: 'Annual screening for celiac disease (common in DS). Last screen 11/22 negative.', due: 'Next: Nov 2025' },
-                    { title: 'Cognitive Assessment', status: 'normal', details: 'Annual assessment completed 11/15. Stable functioning, no signs of early-onset dementia.', due: 'Next: Nov 2025' }
-                ],
-                careIssues: [
-                    { issue: 'Down Syndrome Health Surveillance', detail: 'Requires annual TSH, celiac screening, cognitive assessment for early dementia detection. Biennial cardiac echo.' },
-                    { issue: 'Obstructive Sleep Apnea', detail: 'High risk in Down syndrome. Moderate OSA documented. Family declined CPAP previously. Repeat study scheduled to reassess and discuss treatment options.' },
-                    { issue: 'Communication & Adaptive Function', detail: 'Primarily nonverbal, uses AAC device effectively. Continues to participate in day program with good progress in vocational skills.' },
-                    { issue: 'Transition Planning', detail: 'Successfully transitioned to adult services. Guardianship established. Living in group home with good supports.' }
-                ],
-                specialists: [
-                    { name: 'Dr. Robert Kim', specialty: 'Adult Down Syndrome Program', contact: 'DS Clinic: (617) 555-0123' },
-                    { name: 'Dr. Lisa Wong', specialty: 'Adult Congenital Heart Disease', contact: 'Cardiology: (617) 555-0145' },
-                    { name: 'Dr. Sarah Chen', specialty: 'Sleep Medicine', contact: 'Sleep Clinic: (617) 555-0167' },
-                    { name: 'Dr. Michael Torres', specialty: 'Neurology - Developmental', contact: 'Neuro: (617) 555-0189' }
-                ]
-            }
-        ];
-        
-        let currentPatient = 0;
-        
+        let currentPatient = null;
+
+        function loadPatientList() {
+            document.getElementById('patient-grid').innerHTML = PATIENTS_DATA.map(p => `
+                <div class="patient-card" onclick="showPatient(${p.id})">
+                    <div style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">${p.name}</div>
+                    <div style="font-size: 14px; color: #64748b; margin-bottom: 12px;">
+                        ${p.mrn} • Age ${p.age}<br>
+                        ${p.diagnosis.split('(')[0]}
+                    </div>
+                    <div style="font-size: 13px; color: #64748b;">Last visit: ${new Date(p.lastVisit).toLocaleDateString()}</div>
+                </div>
+            `).join('');
+        }
+
         function showList() {
             document.getElementById('list-page').classList.add('active');
-            document.getElementById('patient-page').classList.remove('active');
+            document.getElementById('detail-page').classList.remove('active');
         }
-        
-        function showPatient(index) {
-            currentPatient = index;
-            const patient = patients[index];
+
+        function showPatient(id) {
+            currentPatient = getPatientById(id);
             
             // Header
             document.getElementById('patient-header').innerHTML = `
-                <div class="patient-name">${patient.name}</div>
-                <div class="patient-info-grid">
-                    <div>
-                        <div class="info-label">MRN</div>
-                        <div class="info-value">${patient.mrn}</div>
-                    </div>
-                    <div>
-                        <div class="info-label">Age / DOB</div>
-                        <div class="info-value">${patient.age} years • ${patient.dob}</div>
-                    </div>
-                    <div>
-                        <div class="info-label">Insurance</div>
-                        <div class="info-value">${patient.insurance}</div>
-                    </div>
-                    <div>
-                        <div class="info-label">Last Visit</div>
-                        <div class="info-value">${patient.lastVisit}</div>
-                    </div>
-                </div>
-                <div style="margin-top: 16px;">
-                    ${patient.conditions.map(c => `<span class="condition-badge">${c}</span>`).join('')}
+                <div style="font-size: 32px; font-weight: 700; margin-bottom: 16px;">${currentPatient.name}</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; opacity: 0.9;">
+                    <div><strong>MRN:</strong> ${currentPatient.mrn}</div>
+                    <div><strong>Age:</strong> ${currentPatient.age}</div>
+                    <div><strong>Last Visit:</strong> ${new Date(currentPatient.lastVisit).toLocaleDateString()}</div>
+                    <div><strong>Insurance:</strong> ${currentPatient.insurance}</div>
                 </div>
             `;
             
-            // Summary
-            document.getElementById('clinical-summary').textContent = patient.summary;
-            
-            // Actions
-            document.getElementById('outstanding-actions').innerHTML = patient.actions.map(action => `
-                <div class="action-item ${action.status}">
-                    <div class="action-header">
-                        <div class="action-title">${action.title}</div>
-                        <span class="status-badge status-${action.status}">${action.due}</span>
+            // Summary tab
+            document.getElementById('tab-0').innerHTML = `
+                <h3 style="margin-bottom: 16px;">Clinical Summary</h3>
+                <div class="clinical-summary">${currentPatient.clinicalSummary}</div>
+                
+                <h3 style="margin-top: 30px; margin-bottom: 16px;">Notes Since Last Visit</h3>
+                <div style="padding: 16px; background: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 6px;">
+                    ${currentPatient.notesSinceLastVisit}
+                </div>
+                
+                <h3 style="margin-top: 30px; margin-bottom: 16px;">Disease-Related Care Issues</h3>
+                ${currentPatient.careIssues.map(issue => `
+                    <div style="padding: 16px; background: #f0f9ff; border-left: 4px solid #0ea5e9; border-radius: 6px; margin: 12px 0;">
+                        <div style="font-weight: 600; margin-bottom: 8px;">${issue.issue}</div>
+                        <div style="font-size: 14px; color: #0c4a6e;">${issue.detail}</div>
                     </div>
-                    <div style="font-size: 14px; color: #64748b; margin-top: 8px;">${action.details}</div>
-                </div>
-            `).join('');
+                `).join('')}
+            `;
             
-            // Care Issues
-            document.getElementById('care-issues').innerHTML = patient.careIssues.map(item => `
-                <div style="padding: 16px; background: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 6px; margin: 12px 0;">
-                    <div style="font-weight: 600; margin-bottom: 8px;">${item.issue}</div>
-                    <div style="font-size: 14px; color: #78350f;">${item.detail}</div>
-                </div>
-            `).join('');
+            // Outstanding actions tab
+            document.getElementById('tab-1').innerHTML = `
+                <h3 style="margin-bottom: 16px;">Outstanding Actions & Care Gaps</h3>
+                ${currentPatient.outstandingActions.map(action => `
+                    <div class="action-item ${action.status}">
+                        <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 8px;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; font-size: 16px;">${action.title}</div>
+                                <div style="font-size: 13px; color: #64748b; margin-top: 4px;">${action.due}</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 14px; margin-top: 8px;">${action.details}</div>
+                    </div>
+                `).join('')}
+            `;
             
-            // Medications
-            document.getElementById('medications').innerHTML = patient.medications.map(med => 
-                `<li><strong>•</strong> ${med}</li>`
-            ).join('');
+            // Specialists tab
+            document.getElementById('tab-2').innerHTML = `
+                <h3 style="margin-bottom: 16px;">Involved Subspecialists</h3>
+                ${currentPatient.specialists.map(spec => `
+                    <div class="specialist-card">
+                        <div style="font-weight: 600; margin-bottom: 4px;">${spec.name}</div>
+                        <div style="font-size: 14px; color: #0c4a6e; margin-bottom: 4px;">${spec.specialty}</div>
+                        <div style="font-size: 13px; color: #64748b;">
+                            ${spec.contact} • Last seen: ${new Date(spec.lastSeen).toLocaleDateString()}
+                        </div>
+                    </div>
+                `).join('')}
+            `;
             
-            // Specialists
-            document.getElementById('subspecialists').innerHTML = patient.specialists.map(spec => `
-                <div class="specialist-card">
-                    <div class="specialist-name">${spec.name}</div>
-                    <div class="specialist-specialty">${spec.specialty}</div>
-                    <div style="font-size: 13px; color: #64748b; margin-top: 4px;">${spec.contact}</div>
-                </div>
-            `).join('');
+            // Records tab
+            document.getElementById('tab-3').innerHTML = `
+                <h3 style="margin-bottom: 16px;">All Records (One Line View)</h3>
+                ${currentPatient.records.map(record => `
+                    <div class="record-item">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">${record.type}</div>
+                                <div style="font-size: 14px; color: #64748b; margin-top: 4px;">
+                                    ${record.provider} • ${new Date(record.date).toLocaleDateString()} • ${record.source}
+                                </div>
+                            </div>
+                            <button class="btn" style="padding: 6px 12px;">View</button>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
             
-            // Show patient page
             document.getElementById('list-page').classList.remove('active');
-            document.getElementById('patient-page').classList.add('active');
+            document.getElementById('detail-page').classList.add('active');
         }
+
+        function switchTab(index) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.querySelectorAll('.tab')[index].classList.add('active');
+            document.querySelectorAll('.tab-content')[index].classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPatientList);
     </script>
 </body>
 </html>
