@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review & Generate - HealthSync Doctor</title>
+    <script src="patients-data.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #f8fafc;
+        }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+        
+        nav { padding: 20px 0; background: white; border-bottom: 1px solid #e5e5e5; }
+        
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo { font-size: 24px; font-weight: 600; color: #2563eb; }
+        
+        .nav-link {
+            color: #64748b;
+            text-decoration: none;
+            font-size: 14px;
+            margin-left: 20px;
+        }
+        
+        h1 { font-size: 32px; margin: 30px 0 20px 0; }
+        
+        .patient-selector {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+        }
+        
+        select {
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            min-width: 300px;
+        }
+        
+        .review-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+            display: none;
+        }
+        
+        .review-section.active { display: block; }
+        
+        .upload-item {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+        
+        .upload-item.pending {
+            border-left: 4px solid #f59e0b;
+            background: #fffbeb;
+        }
+        
+        .upload-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+        
+        .upload-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .upload-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-accept {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-accept:hover { background: #059669; }
+        
+        .btn-reject {
+            background: #dc2626;
+            color: white;
+        }
+        
+        .btn-reject:hover { background: #b91c1c; }
+        
+        .btn-edit {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .btn-edit:hover { background: #1d4ed8; }
+        
+        .btn-secondary {
+            background: white;
+            color: #2563eb;
+            border: 2px solid #2563eb;
+        }
+        
+        .btn-secondary:hover { background: #eff6ff; }
+        
+        .upload-preview {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 6px;
+            padding: 16px;
+            margin-top: 12px;
+            font-size: 14px;
+            color: #0c4a6e;
+        }
+        
+        .edit-field {
+            margin: 12px 0;
+        }
+        
+        .edit-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+        
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .generate-section {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 2px solid #bae6fd;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .btn-generate {
+            background: #2563eb;
+            color: white;
+            padding: 16px 48px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-generate:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+        
+        .form-template {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .form-section {
+            margin: 24px 0;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .form-section:last-child { border-bottom: none; }
+        
+        .form-section-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 16px;
+            color: #0c4a6e;
+        }
+        
+        .field-group {
+            margin: 12px 0;
+        }
+        
+        .specialist-entry {
+            background: #f9fafb;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 8px 0;
+        }
+        
+        .success-banner {
+            background: #d1fae5;
+            border: 2px solid #6ee7b7;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">HealthSync - Review & Generate</div>
+                <div>
+                    <a href="doctor.html" class="nav-link">Doctor Portal</a>
+                    <a href="admin.html" class="nav-link">Admin Portal</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Review Patient Data & Generate Transition Document</h1>
+        
+        <!-- Patient Selector -->
+        <div class="patient-selector">
+            <h3 style="margin-bottom: 16px;">Select Patient</h3>
+            <select id="patient-select" onchange="loadPatientReview()">
+                <option value="">Choose a patient...</option>
+            </select>
+        </div>
+
+        <!-- Review Uploaded Data -->
+        <div class="review-section" id="review-section">
+            <h2 style="margin-bottom: 20px;">Review Uploaded Patient Data</h2>
+            <p style="color: #64748b; margin-bottom: 20px;">Accept, reject, or edit each uploaded document before generating the transition packet</p>
+            
+            <div id="uploads-list"></div>
+            
+            <!-- Generate Button -->
+            <div class="generate-section" id="generate-section" style="display: none;">
+                <div style="font-size: 24px; margin-bottom: 16px;">✓</div>
+                <h3 style="margin-bottom: 12px;">All uploads reviewed!</h3>
+                <p style="color: #0c4a6e; margin-bottom: 24px;">Ready to generate the Pediatric to Adult Transition Care Summary</p>
+                <button class="btn-generate" onclick="showForm()">Generate Transition Document</button>
+            </div>
+        </div>
+
+        <!-- Generated Form -->
+        <div class="review-section" id="form-section">
+            <h2 style="margin-bottom: 20px;">BWH Transition Care Team: Pediatric to Adult Transition Care Summary</h2>
+            
+            <div class="form-template" id="generated-form"></div>
+            
+            <div style="margin-top: 30px; text-align: center;">
+                <button class="btn btn-secondary" onclick="downloadPDF()" style="margin-right: 12px; padding: 16px 32px; font-size: 16px;">📄 Download as PDF</button>
+                <button class="btn btn-edit" onclick="emailToProvider()" style="margin-right: 12px; padding: 16px 32px; font-size: 16px;">📧 Email to New Provider</button>
+                <button class="btn-accept" onclick="pushToEHR()" style="padding: 16px 32px; font-size: 16px;">🏥 Push to EHR</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPatient = null;
+        let reviewedUploads = [];
+        
+        // Mock uploaded data for demo
+        const mockUploads = {
+            1: [ // Maya Chen
+                { id: 1, name: 'Previous_PFT_Results_2024.pdf', type: 'Lab Results', status: 'pending', data: 'FEV1: 65% predicted (baseline pre-Trikafta)' },
+                { id: 2, name: 'CF_Clinic_Notes_Dec2024.pdf', type: 'Clinic Notes', status: 'pending', data: 'Patient stable on current regimen' },
+                { id: 3, name: 'Medication_List_Current.pdf', type: 'Medications', status: 'pending', data: 'Trikafta, Creon, Insulin degludec, Azithromycin' }
+            ],
+            2: [ // Alex Thompson
+                { id: 4, name: 'Thyroid_Cancer_Pathology.pdf', type: 'Pathology Report', status: 'pending', data: 'Papillary thyroid carcinoma, 2.1cm' },
+                { id: 5, name: 'Post_Surgical_Notes.pdf', type: 'Operative Report', status: 'pending', data: 'Total thyroidectomy completed, right vocal cord paresis noted' }
+            ],
+            3: [ // Jordan Martinez
+                { id: 6, name: 'Cardiac_Echo_Report.pdf', type: 'Imaging', status: 'pending', data: 'Post-surgical ASD/VSD repair, excellent biventricular function' },
+                { id: 7, name: 'Cognitive_Assessment.pdf', type: 'Assessment', status: 'pending', data: 'Stable cognitive functioning, no signs of early-onset dementia' }
+            ]
+        };
+
+        // Load patient selector
+        function loadPatientSelector() {
+            const select = document.getElementById('patient-select');
+            select.innerHTML = '<option value="">Choose a patient...</option>' +
+                PATIENTS_DATA.map(p => `<option value="${p.id}">${p.name} (${p.mrn})</option>`).join('');
+        }
+
+        // Load patient review section
+        function loadPatientReview() {
+            const patientId = parseInt(document.getElementById('patient-select').value);
+            if (!patientId) {
+                document.getElementById('review-section').classList.remove('active');
+                return;
+            }
+            
+            currentPatient = getPatientById(patientId);
+            reviewedUploads = [];
+            
+            document.getElementById('review-section').classList.add('active');
+            document.getElementById('form-section').classList.remove('active');
+            
+            const uploads = mockUploads[patientId] || [];
+            
+            document.getElementById('uploads-list').innerHTML = uploads.map(upload => `
+                <div class="upload-item ${upload.status}" id="upload-${upload.id}">
+                    <div class="upload-header">
+                        <div>
+                            <div class="upload-title">${upload.name}</div>
+                            <div style="font-size: 14px; color: #64748b; margin-top: 4px;">Type: ${upload.type}</div>
+                        </div>
+                        <div class="upload-actions">
+                            <button class="btn btn-accept" onclick="acceptUpload(${upload.id})">✓ Accept</button>
+                            <button class="btn btn-edit" onclick="editUpload(${upload.id})">✎ Edit</button>
+                            <button class="btn btn-reject" onclick="rejectUpload(${upload.id})">✗ Reject</button>
+                        </div>
+                    </div>
+                    <div class="upload-preview">
+                        <strong>Preview:</strong> ${upload.data}
+                    </div>
+                    <div id="edit-form-${upload.id}" style="display: none; margin-top: 16px; border-top: 1px solid #e5e7eb; padding-top: 16px;">
+                        <div class="edit-field">
+                            <label class="edit-label">Document Type</label>
+                            <input type="text" value="${upload.type}" id="edit-type-${upload.id}">
+                        </div>
+                        <div class="edit-field">
+                            <label class="edit-label">Data/Notes</label>
+                            <textarea id="edit-data-${upload.id}">${upload.data}</textarea>
+                        </div>
+                        <button class="btn btn-edit" onclick="saveEdit(${upload.id})">Save Changes</button>
+                        <button class="btn btn-secondary" onclick="cancelEdit(${upload.id})" style="margin-left: 8px;">Cancel</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            checkAllReviewed();
+        }
+
+        function acceptUpload(uploadId) {
+            reviewedUploads.push(uploadId);
+            const item = document.getElementById(`upload-${uploadId}`);
+            item.style.background = '#f0fdf4';
+            item.style.borderLeftColor = '#10b981';
+            item.querySelector('.upload-actions').innerHTML = '<span style="color: #10b981; font-weight: 600;">✓ Accepted</span>';
+            checkAllReviewed();
+        }
+
+        function rejectUpload(uploadId) {
+            reviewedUploads.push(uploadId);
+            const item = document.getElementById(`upload-${uploadId}`);
+            item.style.background = '#fef2f2';
+            item.style.borderLeftColor = '#dc2626';
+            item.querySelector('.upload-actions').innerHTML = '<span style="color: #dc2626; font-weight: 600;">✗ Rejected</span>';
+            checkAllReviewed();
+        }
+
+        function editUpload(uploadId) {
+            document.getElementById(`edit-form-${uploadId}`).style.display = 'block';
+        }
+
+        function saveEdit(uploadId) {
+            reviewedUploads.push(uploadId);
+            const item = document.getElementById(`upload-${uploadId}`);
+            item.style.background = '#eff6ff';
+            item.style.borderLeftColor = '#2563eb';
+            item.querySelector('.upload-actions').innerHTML = '<span style="color: #2563eb; font-weight: 600;">✎ Edited & Accepted</span>';
+            document.getElementById(`edit-form-${uploadId}`).style.display = 'none';
+            checkAllReviewed();
+        }
+
+        function cancelEdit(uploadId) {
+            document.getElementById(`edit-form-${uploadId}`).style.display = 'none';
+        }
+
+        function checkAllReviewed() {
+            const patientId = currentPatient.id;
+            const totalUploads = (mockUploads[patientId] || []).length;
+            if (reviewedUploads.length >= totalUploads && totalUploads > 0) {
+                document.getElementById('generate-section').style.display = 'block';
+            }
+        }
+
+        function showForm() {
+            document.getElementById('form-section').classList.add('active');
+            document.getElementById('review-section').classList.remove('active');
+            generateForm();
+        }
+
+        function generateForm() {
+            const p = currentPatient;
+            
+            document.getElementById('generated-form').innerHTML = `
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div style="font-size: 14px; color: #64748b;">Encounter Date: ${new Date().toLocaleDateString()}</div>
+                    <div style="font-size: 18px; font-weight: 600; margin-top: 12px;">Dr. ${p.primaryPhysician}</div>
+                    <div style="color: #64748b;">Physician - Specialty: Internal Medicine</div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Virtual Visit 1: Patient Information</div>
+                    <div class="field-group">
+                        <strong>Patient Name:</strong> ${p.name}<br>
+                        <strong>Date of Birth:</strong> ${p.dob}<br>
+                        <strong>Preferred Language:</strong> English
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">HPI</div>
+                    <p>${p.name} is a ${p.age} y.o. with a history of ${p.diagnosis}, who presents virtually today for transition care planning, specifically to prepare to transition from a pediatric to adult provider.</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Patient Special Needs</div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                        <div><strong>DME?</strong> YES/NO:22800</div>
+                        <div><strong>Home Services?</strong> YES/NO:22800</div>
+                        <div><strong>Social Services?</strong> YES/NO:22800</div>
+                        <div><strong>Ancillary Services?</strong> YES/NO:22800</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Specialists (${p.specialists.length} total)</div>
+                    ${p.specialists.map((spec, i) => `
+                        <div class="specialist-entry">
+                            <strong>Specialist ${i+1}:</strong> ${spec.name}<br>
+                            <strong>Specialty:</strong> ${spec.specialty}<br>
+                            <strong>Contact:</strong> ${spec.contact}<br>
+                            <strong>Provider Type:</strong> TCT Provider Type:56409<br>
+                            <strong>Plan to transition from pediatric to adult specialist?</strong> YES/NO:22800
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Patient Medications</div>
+                    <p>Reviewed with patient today and updated in Epic</p>
+                    <ul style="margin-top: 12px;">
+                        ${p.medications.map(med => `<li style="margin: 8px 0;">${med}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Transition Goals</div>
+                    <div class="field-group">
+                        <strong>Goal One:</strong> ***<br>
+                        <strong>Goal Two:</strong> ***<br>
+                        <strong>Goal Three:</strong> ***
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Insurance Needs</div>
+                    <div class="field-group">
+                        <strong>Insurance change to see TCT?</strong> YES/NO:22800<br>
+                        <strong>Does patient have a current PCP?</strong> YES/NO:22800<br>
+                        <strong>PCP Name:</strong> @PCPENAME@<br>
+                        <strong>PCP Phone:</strong> ${p.phone}
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Assessment/Plan</div>
+                    <p>${p.clinicalSummary}</p>
+                    
+                    <div style="margin-top: 20px;">
+                        <strong>#Transition Care Planning</strong><br>
+                        Patient is ready to transition to adult PCP. We will help facilitate matching with a provider. We discussed today that we will email their new PCP with this summary note/transition packet attached, and remain available as a resource to both the patient and their PCP going forward.
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Action Items</div>
+                    <strong>For PCP f/up:</strong><br>
+                    ${p.outstandingActions.map(action => `- ${action.title}: ${action.details}<br>`).join('')}
+                    
+                    <div style="margin-top: 12px;">
+                        <strong>Specialists manage the following:</strong><br>
+                        ${p.specialists.map(spec => `- ${spec.specialty}<br>`).join('')}
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 2px solid #e5e7eb;">
+                    <div style="font-weight: 600; margin-bottom: 8px;">${p.primaryPhysician}</div>
+                    <div style="font-size: 14px; color: #64748b;">Appointment on ${new Date().toLocaleDateString()}</div>
+                </div>
+            `;
+        }
+
+        function downloadPDF() {
+            alert('✓ Transition Care Summary PDF generated!\n\nDocument includes:\n- Patient information\n- Complete medical history\n- Specialist list with contacts\n- Current medications\n- Transition goals\n- Action items for new PCP\n\nFile: ' + currentPatient.name.replace(' ', '_') + '_Transition_Summary.pdf');
+        }
+
+        function emailToProvider() {
+            const email = prompt('Enter new provider email address:', 'provider@hospital.com');
+            if (email) {
+                alert('✓ Transition Care Summary emailed to: ' + email + '\n\nIncluded:\n- Summary document (PDF)\n- All accepted patient uploads\n- Specialist contact information\n\nNew provider will receive within 5 minutes.');
+            }
+        }
+
+        function pushToEHR() {
+            const ehrSystems = [
+                'Epic',
+                'Cerner',
+                'Athena Health',
+                'Allscripts',
+                'eClinicalWorks',
+                'NextGen'
+            ];
+            
+            const ehrHTML = ehrSystems.map((ehr, i) => `${i+1}. ${ehr}`).join('\n');
+            const ehrChoice = prompt(
+                'Select EHR System:\n\n' + ehrHTML + '\n\nEnter number (1-6):',
+                '1'
+            );
+            
+            if (ehrChoice && ehrChoice >= 1 && ehrChoice <= 6) {
+                const selectedEHR = ehrSystems[ehrChoice - 1];
+                
+                // Simulate EHR push
+                const confirmMsg = `Pushing to ${selectedEHR}...\n\n` +
+                    `✓ Document Type: Transition Care Summary\n` +
+                    `✓ Patient: ${currentPatient.name} (MRN: ${currentPatient.mrn})\n` +
+                    `✓ Provider: ${currentPatient.primaryPhysician}\n` +
+                    `✓ Date: ${new Date().toLocaleDateString()}\n\n` +
+                    `Document will be filed in:\n` +
+                    `- Patient Chart\n` +
+                    `- Transition Care Records\n` +
+                    `- Specialist Communications\n\n` +
+                    `Estimated time: 2-5 minutes`;
+                
+                alert(confirmMsg);
+                
+                // Show success
+                setTimeout(() => {
+                    alert(`✓ Successfully pushed to ${selectedEHR}!\n\n` +
+                        `Document ID: TCT-${Date.now()}\n` +
+                        `Status: Filed in patient chart\n` +
+                        `Accessible by: All authorized providers`);
+                }, 1000);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadPatientSelector);
+    </script>
+</body>
+</html>
