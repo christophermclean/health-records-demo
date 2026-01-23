@@ -286,8 +286,9 @@
             <div class="form-template" id="generated-form"></div>
             
             <div style="margin-top: 30px; text-align: center;">
-                <button class="btn btn-secondary" onclick="downloadPDF()" style="margin-right: 12px; padding: 16px 32px; font-size: 16px;">Download as PDF</button>
-                <button class="btn btn-edit" onclick="emailToProvider()" style="padding: 16px 32px; font-size: 16px;">Email to New Provider</button>
+                <button class="btn btn-secondary" onclick="downloadPDF()" style="margin-right: 12px; padding: 16px 32px; font-size: 16px;">📄 Download as PDF</button>
+                <button class="btn btn-edit" onclick="emailToProvider()" style="margin-right: 12px; padding: 16px 32px; font-size: 16px;">📧 Email to New Provider</button>
+                <button class="btn-accept" onclick="pushToEHR()" style="padding: 16px 32px; font-size: 16px;">🏥 Push to EHR</button>
             </div>
         </div>
     </div>
@@ -530,6 +531,49 @@
             const email = prompt('Enter new provider email address:', 'provider@hospital.com');
             if (email) {
                 alert('✓ Transition Care Summary emailed to: ' + email + '\n\nIncluded:\n- Summary document (PDF)\n- All accepted patient uploads\n- Specialist contact information\n\nNew provider will receive within 5 minutes.');
+            }
+        }
+
+        function pushToEHR() {
+            const ehrSystems = [
+                'Epic',
+                'Cerner',
+                'Athena Health',
+                'Allscripts',
+                'eClinicalWorks',
+                'NextGen'
+            ];
+            
+            const ehrHTML = ehrSystems.map((ehr, i) => `${i+1}. ${ehr}`).join('\n');
+            const ehrChoice = prompt(
+                'Select EHR System:\n\n' + ehrHTML + '\n\nEnter number (1-6):',
+                '1'
+            );
+            
+            if (ehrChoice && ehrChoice >= 1 && ehrChoice <= 6) {
+                const selectedEHR = ehrSystems[ehrChoice - 1];
+                
+                // Simulate EHR push
+                const confirmMsg = `Pushing to ${selectedEHR}...\n\n` +
+                    `✓ Document Type: Transition Care Summary\n` +
+                    `✓ Patient: ${currentPatient.name} (MRN: ${currentPatient.mrn})\n` +
+                    `✓ Provider: ${currentPatient.primaryPhysician}\n` +
+                    `✓ Date: ${new Date().toLocaleDateString()}\n\n` +
+                    `Document will be filed in:\n` +
+                    `- Patient Chart\n` +
+                    `- Transition Care Records\n` +
+                    `- Specialist Communications\n\n` +
+                    `Estimated time: 2-5 minutes`;
+                
+                alert(confirmMsg);
+                
+                // Show success
+                setTimeout(() => {
+                    alert(`✓ Successfully pushed to ${selectedEHR}!\n\n` +
+                        `Document ID: TCT-${Date.now()}\n` +
+                        `Status: Filed in patient chart\n` +
+                        `Accessible by: All authorized providers`);
+                }, 1000);
             }
         }
 
