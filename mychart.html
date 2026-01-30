@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyChart - Continuity of Care Planning</title>
+    <script src="patients-data.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #f5f5f5;
+        }
+        
+        /* Epic MyChart Header */
+        .epic-header {
+            background: #0066cc;
+            color: white;
+            padding: 16px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .epic-header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .epic-logo {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .patient-name {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        /* Epic Sidebar */
+        .epic-layout {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: calc(100vh - 60px);
+        }
+        
+        .epic-sidebar {
+            width: 220px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            padding: 20px 0;
+        }
+        
+        .nav-item {
+            padding: 12px 24px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover {
+            background: #f5f5f5;
+        }
+        
+        .nav-item.active {
+            background: #e6f2ff;
+            border-left-color: #0066cc;
+            color: #0066cc;
+            font-weight: 600;
+        }
+        
+        /* Main Content */
+        .epic-content {
+            flex: 1;
+            padding: 30px;
+            background: #f5f5f5;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .notification-banner {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+        
+        .notification-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+        
+        h1 {
+            font-size: 28px;
+            color: #0066cc;
+            margin-bottom: 12px;
+        }
+        
+        h2 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: #333;
+        }
+        
+        .appointment-info {
+            background: #e6f2ff;
+            border-left: 4px solid #0066cc;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .info-row {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .info-row:last-child { border-bottom: none; }
+        
+        .info-label {
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .btn-epic {
+            background: #0066cc;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-epic:hover {
+            background: #0052a3;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #0066cc;
+            border: 2px solid #0066cc;
+        }
+        
+        .btn-secondary:hover {
+            background: #f5f5f5;
+        }
+        
+        .upload-section {
+            margin: 30px 0;
+        }
+        
+        .upload-zone {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            background: #fafafa;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .upload-zone:hover {
+            border-color: #0066cc;
+            background: #f5f5f5;
+        }
+        
+        .upload-icon { font-size: 48px; margin-bottom: 16px; }
+        
+        .file-list {
+            margin-top: 20px;
+        }
+        
+        .file-item {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-left: 4px solid #28a745;
+            padding: 16px;
+            margin: 12px 0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .questionnaire-section {
+            background: #f9f9f9;
+            padding: 24px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .question-group {
+            margin: 20px 0;
+        }
+        
+        .question-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .checkbox-group {
+            margin: 12px 0;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+        }
+        
+        .checkbox-label input {
+            margin-right: 12px;
+            width: auto;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Epic Header -->
+    <div class="epic-header">
+        <div class="epic-header-content">
+            <div class="epic-logo">MyChart</div>
+            <div class="patient-name" id="patient-name"></div>
+        </div>
+    </div>
+
+    <!-- Epic Layout -->
+    <div class="epic-layout">
+        <!-- Sidebar -->
+        <div class="epic-sidebar">
+            <div class="nav-item active">Messages</div>
+            <div class="nav-item">Appointments</div>
+            <div class="nav-item">Test Results</div>
+            <div class="nav-item">Medications</div>
+            <div class="nav-item">Medical Record</div>
+            <div class="nav-item">Billing</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="epic-content">
+            <!-- Notification Banner -->
+            <div class="notification-banner">
+                <div class="notification-icon">📋</div>
+                <h2 style="color: #856404; margin-bottom: 8px;">Action Required: Continuity of Care Planning</h2>
+                <p style="color: #856404;">You have an upcoming appointment for continuity of care planning. Please complete the information below before your visit.</p>
+            </div>
+
+            <!-- Appointment Info -->
+            <div class="content-card">
+                <h1>Continuity of Care Planning Appointment</h1>
+                <p style="color: #666; margin-bottom: 20px;">Preparing for your move from pediatric to adult care</p>
+
+                <div class="appointment-info">
+                    <h3 style="margin-bottom: 16px;">Appointment Details</h3>
+                    <div class="info-row">
+                        <div class="info-label">Date & Time:</div>
+                        <div id="appt-date"></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Provider:</div>
+                        <div id="appt-provider"></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Location:</div>
+                        <div>Virtual Visit (Video)</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Purpose:</div>
+                        <div>Pediatric to Adult Continuity of Care Planning</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Medical Records -->
+            <div class="content-card">
+                <h2>Import Your Medical Records</h2>
+                
+                <!-- Pull from MyChart -->
+                <div style="margin-bottom: 40px;">
+                    <h3 style="margin-bottom: 16px;">📋 Import from My Health Records</h3>
+                    <p style="color: #666; margin-bottom: 16px;">Select records from your MyChart to include in your continuity of care packet</p>
+                    
+                    <div style="background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px;" id="mychart-records">
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" checked> <strong>CF Clinic Visit</strong> - Dr. Martinez, 01/14/2025
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" checked> <strong>Lab Results: Quarterly CF Panel</strong> - Quest Diagnostics, 12/28/2024
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" checked> <strong>Chest CT Report</strong> - Boston Children's Radiology, 12/10/2024
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox"> <strong>Pulmonology Consult</strong> - Dr. Martinez, 10/15/2024
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox"> <strong>Hospital Admission Summary</strong> - Children's Hospital, 08/20/2024
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox"> <strong>Genetic Testing Results</strong> - Partners Genetics, 06/10/2024
+                            </label>
+                        </div>
+                        <button class="btn-epic" style="margin-top: 16px;">Import Selected Records (3)</button>
+                    </div>
+                </div>
+
+                <!-- Upload from Outside -->
+                <h3 style="margin-bottom: 16px;">📄 Upload Records from Outside Providers</h3>
+                <p style="color: #666; margin-bottom: 20px;">Upload any records from providers not in the Epic system</p>
+
+                <div class="upload-section">
+                    <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+                        <div class="upload-icon">📄</div>
+                        <h3>Click to upload or drag files here</h3>
+                        <p style="color: #666; margin-top: 8px;">Accepted formats: PDF, JPG, PNG</p>
+                    </div>
+                    <input type="file" id="file-input" multiple style="display: none;" onchange="handleUpload(this.files)">
+                    
+                    <div class="file-list" id="file-list"></div>
+                </div>
+
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+                    <h3 style="margin-bottom: 12px;">Or request records from your providers</h3>
+                    <p style="color: #666; margin-bottom: 16px;">We can send a records request to any of your current providers</p>
+                    <input type="text" placeholder="Provider name or practice" style="margin-bottom: 12px;">
+                    <button class="btn-epic btn-secondary">Send Records Request</button>
+                </div>
+            </div>
+
+            <!-- Submit Section -->
+            <div class="content-card">
+                <h2>Ready to Submit?</h2>
+                <p style="color: #666; margin-bottom: 20px;">Once you submit, your care team will review your information before your appointment</p>
+                
+                <button class="btn-epic" onclick="submitAll()" style="padding: 16px 48px; font-size: 18px;">Submit All Information</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get patient from URL or default to first
+        const urlParams = new URLSearchParams(window.location.search);
+        const patientId = parseInt(urlParams.get('patient')) || 1;
+        const patient = getPatientById(patientId);
+
+        let uploadedFiles = [];
+
+        // Initialize
+        function init() {
+            document.getElementById('patient-name').textContent = patient.name;
+            
+            const apptDate = new Date();
+            apptDate.setDate(apptDate.getDate() + 7);
+            document.getElementById('appt-date').textContent = apptDate.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+            
+            document.getElementById('appt-provider').textContent = patient.primaryPhysician;
+        }
+
+        // Handle file upload
+        function handleUpload(files) {
+            Array.from(files).forEach(file => {
+                uploadedFiles.push({
+                    name: file.name,
+                    size: (file.size / 1024).toFixed(1) + ' KB',
+                    date: new Date().toLocaleDateString()
+                });
+            });
+
+            document.getElementById('file-list').innerHTML = uploadedFiles.map((file, index) => `
+                <div class="file-item">
+                    <div>
+                        <div style="font-weight: 600;">${file.name}</div>
+                        <div style="font-size: 14px; color: #666; margin-top: 4px;">${file.size} • Uploaded ${file.date}</div>
+                    </div>
+                    <span style="color: #28a745; font-weight: 600;">✓ Uploaded</span>
+                </div>
+            `).join('');
+        }
+
+        function submitAll() {
+            const success = document.createElement('div');
+            success.className = 'success-message';
+            success.innerHTML = `
+                <h3 style="color: #155724; margin-bottom: 8px;">✓ Successfully Submitted!</h3>
+                <p style="color: #155724;">Your continuity of care records have been sent to your care team. They will review everything before your appointment on ${document.getElementById('appt-date').textContent}.</p>
+                <p style="color: #155724; margin-top: 12px;"><strong>What's next?</strong> Your provider will generate a continuity of care summary and coordinate with your new adult providers.</p>
+            `;
+            
+            document.querySelector('.epic-content').insertBefore(
+                success, 
+                document.querySelector('.epic-content').firstChild.nextSibling
+            );
+            
+            window.scrollTo(0, 0);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

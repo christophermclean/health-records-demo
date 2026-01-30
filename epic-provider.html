@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epic - Pediatric to Adult Care Summary</title>
+    <script src="patients-data.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #e8e8e8;
+        }
+        
+        /* Epic Top Bar */
+        .epic-topbar {
+            background: #0051a5;
+            color: white;
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .epic-logo {
+            font-weight: 700;
+            font-size: 18px;
+        }
+        
+        .epic-user {
+            font-size: 13px;
+        }
+        
+        /* Epic Toolbar */
+        .epic-toolbar {
+            background: #f0f0f0;
+            border-bottom: 1px solid #ccc;
+            padding: 8px 16px;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .toolbar-btn {
+            padding: 6px 12px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        
+        .toolbar-btn:hover {
+            background: #e8e8e8;
+        }
+        
+        /* Epic Layout */
+        .epic-workspace {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+        
+        /* Patient Banner */
+        .patient-banner {
+            background: white;
+            border-bottom: 3px solid #0051a5;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .patient-info-left {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+        
+        .patient-name-large {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0051a5;
+        }
+        
+        .patient-details {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        /* Left Sidebar */
+        .epic-sidebar {
+            width: 200px;
+            background: #f8f8f8;
+            border-right: 1px solid #ccc;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        .activity-item:hover {
+            background: #e8e8e8;
+        }
+        
+        .activity-item.active {
+            background: white;
+            border-left: 3px solid #0051a5;
+            font-weight: 600;
+        }
+        
+        /* Main Content */
+        .epic-main {
+            flex: 1;
+            background: white;
+            overflow-y: auto;
+        }
+        
+        /* Tab Navigation */
+        .tab-bar {
+            background: #f0f0f0;
+            border-bottom: 2px solid #ccc;
+            display: flex;
+            padding: 0 16px;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            color: #666;
+        }
+        
+        .tab:hover {
+            background: #e8e8e8;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #0051a5;
+            border-bottom-color: #0051a5;
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            padding: 24px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Form Styling */
+        .form-document {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .form-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0051a5;
+            margin-bottom: 8px;
+        }
+        
+        .form-section {
+            margin: 24px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-left: 4px solid #0051a5;
+            border-radius: 4px;
+        }
+        
+        .form-section-title {
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 12px;
+            color: #0051a5;
+        }
+        
+        .form-field {
+            margin: 12px 0;
+            font-size: 14px;
+        }
+        
+        /* Care Planning Grid */
+        .care-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .care-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-left: 4px solid #0051a5;
+            border-radius: 4px;
+            padding: 20px;
+        }
+        
+        .care-card-title {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #0051a5;
+        }
+        
+        .specialist-item {
+            background: #f5f5f5;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        
+        .intervention-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .intervention-item:last-child { border-bottom: none; }
+        
+        .due-urgent {
+            color: #d32f2f;
+            font-weight: 600;
+        }
+        
+        .due-soon {
+            color: #f57c00;
+            font-weight: 600;
+        }
+        
+        .due-normal {
+            color: #388e3c;
+        }
+        
+        .action-bar {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            border-top: 2px solid #0051a5;
+            padding: 16px 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        
+        .btn-epic {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #0051a5;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #003d7a;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #0051a5;
+            border: 2px solid #0051a5;
+        }
+        
+        .btn-secondary:hover {
+            background: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Epic Top Bar -->
+    <div class="epic-topbar">
+        <div class="epic-logo">Epic</div>
+        <div class="epic-user">Dr. Niraj Sharma, MD, MPH | BWH</div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="epic-toolbar">
+        <button class="toolbar-btn">Chart Review</button>
+        <button class="toolbar-btn">Orders</button>
+        <button class="toolbar-btn">Results</button>
+        <button class="toolbar-btn">Notes</button>
+        <button class="toolbar-btn">Messages</button>
+    </div>
+
+    <!-- Workspace -->
+    <div class="epic-workspace">
+        <!-- Sidebar Activities -->
+        <div class="epic-sidebar">
+            <div class="activity-item">Summary</div>
+            <div class="activity-item">Problems</div>
+            <div class="activity-item">Medications</div>
+            <div class="activity-item">Allergies</div>
+            <div class="activity-item">Immunizations</div>
+            <div class="activity-item active">Continuity of Care</div>
+            <div class="activity-item">Results</div>
+            <div class="activity-item">Reports</div>
+            <div class="activity-item">Encounters</div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="epic-main">
+            <!-- Patient Banner -->
+            <div class="patient-banner">
+                <div class="patient-info-left">
+                    <div>
+                        <div class="patient-name-large" id="patient-name"></div>
+                        <div class="patient-details" id="patient-details"></div>
+                    </div>
+                </div>
+                <div style="text-align: right; font-size: 13px;">
+                    <div><strong>Last Visit:</strong> <span id="last-visit"></span></div>
+                    <div style="margin-top: 4px;"><strong>Next Appt:</strong> <span id="next-visit"></span></div>
+                </div>
+            </div>
+
+            <!-- Completion Status Banner -->
+            <div style="background: #fff3cd; border-bottom: 3px solid #ffc107; padding: 16px 24px;" id="status-banner">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600; font-size: 15px; color: #856404;">📋 Patient Pre-Visit Forms Status</div>
+                        <div style="font-size: 13px; color: #856404; margin-top: 4px;" id="status-text"></div>
+                    </div>
+                    <button class="btn-epic btn-primary" id="review-btn" onclick="reviewSubmission()" style="display: none;">Review Submission</button>
+                    <button class="btn-epic btn-primary" id="mark-complete-btn" onclick="markComplete()" style="display: none;">Mark as Complete</button>
+                </div>
+            </div>
+
+            <!-- Tab Bar -->
+            <div class="tab-bar">
+                <button class="tab active" onclick="switchTab(0)">Pediatric to Adult Summary</button>
+                <button class="tab" onclick="switchTab(1)">Care Planning</button>
+            </div>
+
+            <!-- Tab 1: Transition Summary Document -->
+            <div class="tab-content active" id="tab-0">
+                <div class="form-document" id="transition-document"></div>
+                
+                <div class="action-bar">
+                    <button class="btn-epic btn-secondary" onclick="editDocument()">Edit Document</button>
+                    <button class="btn-epic btn-secondary" onclick="printDocument()">Print</button>
+                    <button class="btn-epic btn-primary" onclick="signAndFile()">Sign & File to Chart</button>
+                </div>
+            </div>
+
+            <!-- Tab 2: Care Planning -->
+            <div class="tab-content" id="tab-1">
+                <h2 style="margin-bottom: 24px; color: #0051a5;">Continuity of Care Planning</h2>
+                
+                <div class="care-grid">
+                    <!-- Subspecialists -->
+                    <div class="care-card">
+                        <div class="care-card-title">Current Subspecialists</div>
+                        <div id="specialists-list"></div>
+                        <button class="btn-epic btn-secondary" style="margin-top: 16px; width: 100%;">Manage Transitions</button>
+                    </div>
+
+                    <!-- Upcoming Health Maintenance -->
+                    <div class="care-card">
+                        <div class="care-card-title">Upcoming Health Interventions</div>
+                        <div id="interventions-list"></div>
+                        <button class="btn-epic btn-secondary" style="margin-top: 16px; width: 100%;">Add Intervention</button>
+                    </div>
+
+                    <!-- Medications Needing Attention -->
+                    <div class="care-card">
+                        <div class="care-card-title">Medication Management</div>
+                        <div id="medications-status"></div>
+                        <button class="btn-epic btn-secondary" style="margin-top: 16px; width: 100%;">Review Medications</button>
+                    </div>
+
+                    <!-- Insurance & Access -->
+                    <div class="care-card">
+                        <div class="care-card-title">Insurance & Access</div>
+                        <div id="insurance-info"></div>
+                        <button class="btn-epic btn-secondary" style="margin-top: 16px; width: 100%;">Update Insurance</button>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <button class="btn-epic btn-secondary" onclick="exportCarePlan()">Export Care Plan</button>
+                    <button class="btn-epic btn-primary" onclick="updateCarePlan()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get patient from URL or default
+        const urlParams = new URLSearchParams(window.location.search);
+        const patientId = parseInt(urlParams.get('patient')) || 1;
+        const patient = getPatientById(patientId);
+        let submissionStatus = 'submitted'; // 'pending', 'submitted', 'reviewed', 'complete'
+
+        function init() {
+            // Patient banner
+            document.getElementById('patient-name').textContent = patient.name;
+            document.getElementById('patient-details').textContent = 
+                `${patient.mrn} | DOB: ${patient.dob} (${patient.age} years) | ${patient.insurance}`;
+            document.getElementById('last-visit').textContent = new Date(patient.lastVisit).toLocaleDateString();
+            document.getElementById('next-visit').textContent = new Date(patient.nextVisit).toLocaleDateString();
+
+            // Update status banner
+            updateStatusBanner();
+
+            // Load transition document
+            loadTransitionDocument();
+            
+            // Load care planning
+            loadCarePlanning();
+        }
+
+        function updateStatusBanner() {
+            const statusText = document.getElementById('status-text');
+            const statusBanner = document.getElementById('status-banner');
+            const reviewBtn = document.getElementById('review-btn');
+            const completeBtn = document.getElementById('mark-complete-btn');
+
+            if (submissionStatus === 'submitted') {
+                statusText.textContent = '✓ Patient has submitted pre-visit records (3 Epic records, 2 uploaded documents)';
+                reviewBtn.style.display = 'block';
+                statusBanner.style.background = '#d1fae5';
+                statusBanner.style.borderColor = '#6ee7b7';
+            } else if (submissionStatus === 'reviewed') {
+                statusText.textContent = '✓ Submission reviewed - Ready to generate final document';
+                completeBtn.style.display = 'block';
+                statusBanner.style.background = '#dbeafe';
+                statusBanner.style.borderColor = '#93c5fd';
+            } else if (submissionStatus === 'complete') {
+                statusText.textContent = '✓ All pre-visit requirements complete';
+                statusBanner.style.background = '#d1fae5';
+                statusBanner.style.borderColor = '#6ee7b7';
+            }
+        }
+
+        function reviewSubmission() {
+            const modal = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;" onclick="this.remove()">
+                    <div style="background: white; border-radius: 8px; padding: 30px; max-width: 700px; max-height: 80vh; overflow-y: auto;" onclick="event.stopPropagation()">
+                        <h2 style="color: #0051a5; margin-bottom: 20px;">Patient Submission Review</h2>
+                        
+                        <div style="margin: 20px 0;">
+                            <h3 style="font-size: 16px; margin-bottom: 12px;">✓ Epic Records Selected (3)</h3>
+                            <div style="background: #f9f9f9; padding: 12px; border-radius: 4px; font-size: 14px; margin: 8px 0;">
+                                • CF Clinic Visit - 01/14/2025
+                            </div>
+                            <div style="background: #f9f9f9; padding: 12px; border-radius: 4px; font-size: 14px; margin: 8px 0;">
+                                • Lab Results: CF Panel - 12/28/2024
+                            </div>
+                            <div style="background: #f9f9f9; padding: 12px; border-radius: 4px; font-size: 14px; margin: 8px 0;">
+                                • Chest CT Report - 12/10/2024
+                            </div>
+                        </div>
+
+                        <div style="margin: 20px 0;">
+                            <h3 style="font-size: 16px; margin-bottom: 12px;">✓ Uploaded Documents (2)</h3>
+                            <div style="background: #f9f9f9; padding: 12px; border-radius: 4px; font-size: 14px; margin: 8px 0;">
+                                📄 PFT_Results_Jan2025.pdf (245 KB)
+                            </div>
+                            <div style="background: #f9f9f9; padding: 12px; border-radius: 4px; font-size: 14px; margin: 8px 0;">
+                                📄 Outside_Pulmonology_Note.pdf (182 KB)
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 30px; display: flex; gap: 12px;">
+                            <button class="btn-epic btn-primary" onclick="approveSubmission(); this.closest('div[style*=fixed]').remove();">Approve All</button>
+                            <button class="btn-epic btn-secondary" onclick="this.closest('div[style*=fixed]').remove();">Close</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modal);
+        }
+
+        function approveSubmission() {
+            submissionStatus = 'reviewed';
+            updateStatusBanner();
+            alert('✓ Patient submission approved!\n\nAll records and forms reviewed. Ready to generate final document.');
+        }
+
+        function markComplete() {
+            if (confirm('Mark continuity of care planning as complete?')) {
+                submissionStatus = 'complete';
+                updateStatusBanner();
+                alert('✓ Marked as complete! Ready for appointment.');
+            }
+        }
+
+        function loadTransitionDocument() {
+            document.getElementById('transition-document').innerHTML = `
+                <div class="form-header">
+                    <div class="form-title">BWH Transition Care Team</div>
+                    <div class="form-title">Pediatric to Adult Continuity of Care Summary</div>
+                    <div style="margin-top: 12px; font-size: 14px; color: #666;">
+                        Encounter Date: ${new Date().toLocaleDateString()}<br>
+                        Provider: Dr. Niraj Sharma, MD, MPH
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Patient Information</div>
+                    <div class="form-field"><strong>Name:</strong> ${patient.name}</div>
+                    <div class="form-field"><strong>Date of Birth:</strong> ${patient.dob} (Age ${patient.age})</div>
+                    <div class="form-field"><strong>MRN:</strong> ${patient.mrn}</div>
+                    <div class="form-field"><strong>Preferred Language:</strong> English</div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">History of Present Illness (HPI)</div>
+                    <div class="form-field">
+                        ${patient.name} is a ${patient.age} year old with a history of ${patient.diagnosis}, 
+                        who presents virtually today for continuity of care planning, specifically to prepare to 
+                        move from pediatric to adult provider.
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Clinical Summary</div>
+                    <div class="form-field">${patient.clinicalSummary}</div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Current Subspecialists (${patient.specialists.length})</div>
+                    ${patient.specialists.map((spec, i) => `
+                        <div class="form-field" style="background: white; padding: 12px; margin: 8px 0; border-radius: 4px;">
+                            <strong>Specialist ${i+1}:</strong> ${spec.name}<br>
+                            <strong>Specialty:</strong> ${spec.specialty}<br>
+                            <strong>Contact:</strong> ${spec.contact}<br>
+                            <strong>Last Seen:</strong> ${new Date(spec.lastSeen).toLocaleDateString()}<br>
+                            <strong>Transition Plan:</strong> Transitioning from pediatric to adult specialist
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Current Medications</div>
+                    <div class="form-field">Reviewed with patient today and updated in Epic:</div>
+                    ${patient.medications.map(med => 
+                        `<div class="form-field" style="padding-left: 20px;">• ${med}</div>`
+                    ).join('')}
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Outstanding Care Items</div>
+                    ${patient.outstandingActions.map(action => `
+                        <div class="form-field" style="background: white; padding: 12px; margin: 8px 0; border-radius: 4px;">
+                            <strong>${action.title}</strong> - ${action.due}<br>
+                            ${action.details}
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Assessment & Plan</div>
+                    <div class="form-field">
+                        <strong>#Continuity of Care Planning</strong><br><br>
+                        Patient is ready to move to adult PCP. We will help facilitate matching with a provider.
+                        We discussed today that we will email their new PCP with this summary note attached, 
+                        and remain available as a resource to both the patient and their PCP going forward.
+                        We will have a brief virtual follow-up visit in 6 months to ensure the handoff is going smoothly.
+                    </div>
+                </div>
+
+                <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #e0e0e0; text-align: center;">
+                    <div style="font-weight: 600;">Niraj Sharma, MD, MPH</div>
+                    <div style="font-size: 14px; color: #666; margin-top: 4px;">
+                        BWH Continuity of Care Team<br>
+                        Date: ${new Date().toLocaleDateString()}
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadCarePlanning() {
+            // Specialists
+            document.getElementById('specialists-list').innerHTML = patient.specialists.map(spec => `
+                <div class="specialist-item">
+                    <div style="font-weight: 600;">${spec.name}</div>
+                    <div style="font-size: 12px; color: #666; margin-top: 4px;">${spec.specialty}</div>
+                    <div style="font-size: 12px; color: #666;">Last seen: ${new Date(spec.lastSeen).toLocaleDateString()}</div>
+                </div>
+            `).join('');
+
+            // Interventions
+            document.getElementById('interventions-list').innerHTML = patient.outstandingActions.map(action => {
+                let dueClass = 'due-normal';
+                if (action.status === 'urgent') dueClass = 'due-urgent';
+                else if (action.status === 'due-soon') dueClass = 'due-soon';
+                
+                return `
+                    <div class="intervention-item">
+                        <div style="font-weight: 600;">${action.title}</div>
+                        <div style="font-size: 13px; color: #666; margin-top: 4px;">${action.details}</div>
+                        <div class="${dueClass}" style="font-size: 13px; margin-top: 4px;">${action.due}</div>
+                    </div>
+                `;
+            }).join('');
+
+            // Medications
+            document.getElementById('medications-status').innerHTML = `
+                <div class="intervention-item">
+                    <div style="font-weight: 600;">Total Active Medications</div>
+                    <div style="font-size: 24px; color: #0051a5; margin-top: 4px;">${patient.medications.length}</div>
+                </div>
+                <div class="intervention-item">
+                    <div style="font-weight: 600;">Requiring Prior Auth</div>
+                    <div style="font-size: 13px; color: #666; margin-top: 4px;">All authorizations current</div>
+                </div>
+            `;
+
+            // Insurance
+            document.getElementById('insurance-info').innerHTML = `
+                <div class="intervention-item">
+                    <div style="font-weight: 600;">Current Insurance</div>
+                    <div style="font-size: 13px; margin-top: 4px;">${patient.insurance}</div>
+                </div>
+                <div class="intervention-item">
+                    <div style="font-weight: 600;">Primary Care Physician</div>
+                    <div style="font-size: 13px; margin-top: 4px;">${patient.primaryPhysician}</div>
+                </div>
+            `;
+        }
+
+        function switchTab(index) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.querySelectorAll('.tab')[index].classList.add('active');
+            document.querySelectorAll('.tab-content')[index].classList.add('active');
+        }
+
+        function signAndFile() {
+            if (confirm('Sign and file this Pediatric to Adult Care Summary to the patient chart?')) {
+                alert('✓ Document signed and filed!\n\nDocument ID: PACS-' + Date.now() + '\nFiled to: Continuity of Care Notes\nAccessible by: All authorized providers\n\nNote will appear in patient chart immediately.');
+            }
+        }
+
+        function editDocument() {
+            alert('Opening document editor...\n\nIn production, this would allow inline editing of the summary document.');
+        }
+
+        function printDocument() {
+            window.print();
+        }
+
+        function updateCarePlan() {
+            alert('✓ Care plan updated!\n\nChanges saved to patient chart.');
+        }
+
+        function exportCarePlan() {
+            alert('✓ Care plan exported!\n\nFormat: PDF\nIncludes: Subspecialists, upcoming interventions, medications, insurance info');
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
